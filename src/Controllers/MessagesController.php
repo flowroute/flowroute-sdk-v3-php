@@ -73,8 +73,8 @@ class MessagesController extends BaseController
 
         //process optional query parameters
         APIHelper::appendUrlWithQueryParameters($_queryBuilder, array (
-            'start_date' => DateTimeHelper::toRfc3339DateTime($start_date),
-            'end_date'   => DateTimeHelper::toRfc3339DateTime($end_date),
+            'start_date' => DateTimeHelper::toRfc3339DateTime($startDate),
+            'end_date'   => DateTimeHelper::toRfc3339DateTime($endDate),
             'limit'      => $limit,
             'offset'     => $offset,
         ));
@@ -84,7 +84,8 @@ class MessagesController extends BaseController
 
         //prepare headers
         $_headers = array (
-            'user-agent'    => 'APIMATIC 2.0'
+            'user-agent'    => 'APIMATIC 2.0',
+            'Accept'        => 'application/json'
         );
 
         //set HTTP basic auth parameters
