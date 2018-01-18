@@ -34,7 +34,7 @@ class NumbersController extends BaseController
      */
     public static function getInstance()
     {
-        if (null === static::$instance) {
+        if (NULL === static::$instance) {
             static::$instance = new static();
         }
         
@@ -58,11 +58,11 @@ class NumbersController extends BaseController
      * @throws APIException Thrown if API call fails
      */
     public function getAccountPhoneNumbers(
-        $startsWith = null,
-        $endsWith = null,
-        $contains = null,
-        $limit = null,
-        $offset = null
+        $startsWith = NULL,
+        $endsWith = NULL,
+        $contains = NULL,
+        $limit = NULL,
+        $offset = NULL
     ) {
 
         //the base uri for api requests
@@ -94,7 +94,7 @@ class NumbersController extends BaseController
 
         //call on-before Http callback
         $_httpRequest = new HttpRequest(HttpMethod::GET, $_headers, $_queryUrl);
-        if ($this->getHttpCallBack() != null) {
+        if ($this->getHttpCallBack() != NULL) {
             $this->getHttpCallBack()->callOnBeforeRequest($_httpRequest);
         }
 
@@ -105,7 +105,7 @@ class NumbersController extends BaseController
         $_httpContext = new HttpContext($_httpRequest, $_httpResponse);
 
         //call on-after Http callback
-        if ($this->getHttpCallBack() != null) {
+        if ($this->getHttpCallBack() != NULL) {
             $this->getHttpCallBack()->callOnAfterRequest($_httpContext);
         }
 
@@ -136,10 +136,7 @@ class NumbersController extends BaseController
      * @return mixed response from the API call
      * @throws APIException Thrown if API call fails
      */
-    public function getPhoneNumberDetails(
-        $id
-    ) {
-
+    public function getPhoneNumberDetails($id) {
         //the base uri for api requests
         $_queryBuilder = Configuration::$BASEURI;
         
@@ -148,7 +145,7 @@ class NumbersController extends BaseController
 
         //process optional query parameters
         $_queryBuilder = APIHelper::appendUrlWithTemplateParameters($_queryBuilder, array (
-            'id' => $id,
+            'id' => $id
             ));
 
         //validate and preprocess url
@@ -165,7 +162,7 @@ class NumbersController extends BaseController
 
         //call on-before Http callback
         $_httpRequest = new HttpRequest(HttpMethod::GET, $_headers, $_queryUrl);
-        if ($this->getHttpCallBack() != null) {
+        if ($this->getHttpCallBack() != NULL) {
             $this->getHttpCallBack()->callOnBeforeRequest($_httpRequest);
         }
 
@@ -176,7 +173,7 @@ class NumbersController extends BaseController
         $_httpContext = new HttpContext($_httpRequest, $_httpResponse);
 
         //call on-after Http callback
-        if ($this->getHttpCallBack() != null) {
+        if ($this->getHttpCallBack() != NULL) {
             $this->getHttpCallBack()->callOnAfterRequest($_httpContext);
         }
 
@@ -233,7 +230,7 @@ class NumbersController extends BaseController
 
         //call on-before Http callback
         $_httpRequest = new HttpRequest(HttpMethod::POST, $_headers, $_queryUrl);
-        if ($this->getHttpCallBack() != null) {
+        if ($this->getHttpCallBack() != NULL) {
             $this->getHttpCallBack()->callOnBeforeRequest($_httpRequest);
         }
 
@@ -244,7 +241,7 @@ class NumbersController extends BaseController
         $_httpContext = new HttpContext($_httpRequest, $_httpResponse);
 
         //call on-after Http callback
-        if ($this->getHttpCallBack() != null) {
+        if ($this->getHttpCallBack() != NULL) {
             $this->getHttpCallBack()->callOnAfterRequest($_httpContext);
         }
 
@@ -287,13 +284,13 @@ class NumbersController extends BaseController
      * @throws APIException Thrown if API call fails
      */
     public function searchForPurchasablePhoneNumbers(
-        $startsWith = null,
-        $contains = null,
-        $endsWith = null,
-        $limit = null,
-        $offset = null,
-        $rateCenter = null,
-        $state = null
+        $startsWith = NULL,
+        $contains = NULL,
+        $endsWith = NULL,
+        $limit = NULL,
+        $offset = NULL,
+        $rateCenter = NULL,
+        $state = NULL
     ) {
 
         //the base uri for api requests
@@ -327,7 +324,7 @@ class NumbersController extends BaseController
 
         //call on-before Http callback
         $_httpRequest = new HttpRequest(HttpMethod::GET, $_headers, $_queryUrl);
-        if ($this->getHttpCallBack() != null) {
+        if ($this->getHttpCallBack() != NULL) {
             $this->getHttpCallBack()->callOnBeforeRequest($_httpRequest);
         }
 
@@ -338,7 +335,7 @@ class NumbersController extends BaseController
         $_httpContext = new HttpContext($_httpRequest, $_httpResponse);
 
         //call on-after Http callback
-        if ($this->getHttpCallBack() != null) {
+        if ($this->getHttpCallBack() != NULL) {
             $this->getHttpCallBack()->callOnAfterRequest($_httpContext);
         }
 
@@ -374,9 +371,9 @@ class NumbersController extends BaseController
      * @throws APIException Thrown if API call fails
      */
     public function listAvailableAreaCodes(
-        $limit = null,
-        $offset = null,
-        $maxSetupCost = null
+        $limit = NULL,
+        $offset = NULL,
+        $maxSetupCost = NULL
     ) {
 
         //the base uri for api requests
@@ -397,7 +394,8 @@ class NumbersController extends BaseController
 
         //prepare headers
         $_headers = array (
-            'user-agent'    => 'APIMATIC 2.0'
+            'user-agent'    => 'APIMATIC 2.0',
+            'Accept'        => 'application/json'
         );
 
         //set HTTP basic auth parameters
@@ -405,7 +403,7 @@ class NumbersController extends BaseController
 
         //call on-before Http callback
         $_httpRequest = new HttpRequest(HttpMethod::GET, $_headers, $_queryUrl);
-        if ($this->getHttpCallBack() != null) {
+        if ($this->getHttpCallBack() != NULL) {
             $this->getHttpCallBack()->callOnBeforeRequest($_httpRequest);
         }
 
@@ -416,7 +414,7 @@ class NumbersController extends BaseController
         $_httpContext = new HttpContext($_httpRequest, $_httpResponse);
 
         //call on-after Http callback
-        if ($this->getHttpCallBack() != null) {
+        if ($this->getHttpCallBack() != NULL) {
             $this->getHttpCallBack()->callOnAfterRequest($_httpContext);
         }
 
@@ -434,6 +432,8 @@ class NumbersController extends BaseController
 
         //handle errors defined at the API level
         $this->validateResponse($_httpResponse, $_httpContext);
+
+        return $response->body;
     }
 
     /**
@@ -451,10 +451,10 @@ class NumbersController extends BaseController
      * @throws APIException Thrown if API call fails
      */
     public function listAvailableExchangeCodes(
-        $limit = null,
-        $offset = null,
-        $maxSetupCost = null,
-        $areacode = null
+        $limit = NULL,
+        $offset = NULL,
+        $maxSetupCost = NULL,
+        $areacode = NULL
     ) {
 
         //the base uri for api requests
@@ -484,7 +484,7 @@ class NumbersController extends BaseController
 
         //call on-before Http callback
         $_httpRequest = new HttpRequest(HttpMethod::GET, $_headers, $_queryUrl);
-        if ($this->getHttpCallBack() != null) {
+        if ($this->getHttpCallBack() != NULL) {
             $this->getHttpCallBack()->callOnBeforeRequest($_httpRequest);
         }
 
@@ -495,7 +495,7 @@ class NumbersController extends BaseController
         $_httpContext = new HttpContext($_httpRequest, $_httpResponse);
 
         //call on-after Http callback
-        if ($this->getHttpCallBack() != null) {
+        if ($this->getHttpCallBack() != NULL) {
             $this->getHttpCallBack()->callOnAfterRequest($_httpContext);
         }
 
@@ -513,5 +513,7 @@ class NumbersController extends BaseController
 
         //handle errors defined at the API level
         $this->validateResponse($_httpResponse, $_httpContext);
+
+        return $response->body;
     }
 }
