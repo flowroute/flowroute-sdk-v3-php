@@ -20,14 +20,14 @@ class Configuration
     public static $BASEURI = 'https://api.flowroute.com';
 
     /**
-     * The username to use with basic authentication
+     * Your Flowroute Access Key which serves as your username
      * @var string
      */
-    public static $basicAuthUserName = 'TODO: Replace';
+    public static $basicAuthUserName = 'FR_ACCESS_KEY';
 
     /**
-     * The password to use with basic authentication
+     * Your Flowroute Secret Key which serves as your password
      * @var string
      */
-    public static $basicAuthPassword = 'TODO: Replace';
+    public static $basicAuthPassword = 'FR_SECRET_KEY';
 }
