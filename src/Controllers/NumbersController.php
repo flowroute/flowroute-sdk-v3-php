@@ -85,7 +85,7 @@ class NumbersController extends BaseController
 
         //prepare headers
         $_headers = array (
-            'user-agent'    => 'APIMATIC 2.0',
+            'user-agent'    => 'Flowroute SDK v3.0',
             'Accept'        => 'application/json'
         );
 
@@ -153,7 +153,7 @@ class NumbersController extends BaseController
 
         //prepare headers
         $_headers = array (
-            'user-agent'    => 'APIMATIC 2.0',
+            'user-agent'    => 'Flowroute SDK v3.0',
             'Accept'        => 'application/json'
         );
 
@@ -221,7 +221,7 @@ class NumbersController extends BaseController
 
         //prepare headers
         $_headers = array (
-            'user-agent'    => 'APIMATIC 2.0',
+            'user-agent'    => 'Flowroute SDK v3.0',
             'Accept'        => 'application/json'
         );
 
@@ -315,7 +315,7 @@ class NumbersController extends BaseController
 
         //prepare headers
         $_headers = array (
-            'user-agent'    => 'APIMATIC 2.0',
+            'user-agent'    => 'Flowroute SDK v3.0',
             'Accept'        => 'application/json'
         );
 
@@ -394,7 +394,7 @@ class NumbersController extends BaseController
 
         //prepare headers
         $_headers = array (
-            'user-agent'    => 'APIMATIC 2.0',
+            'user-agent'    => 'Flowroute SDK v3.0',
             'Accept'        => 'application/json'
         );
 
@@ -476,7 +476,7 @@ class NumbersController extends BaseController
 
         //prepare headers
         $_headers = array (
-            'user-agent'    => 'APIMATIC 2.0'
+            'user-agent'    => 'Flowroute SDK v3.0'
         );
 
         //set HTTP basic auth parameters
