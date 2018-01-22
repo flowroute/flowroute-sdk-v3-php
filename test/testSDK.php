@@ -4,11 +4,10 @@ require_once "../vendor/autoload.php";
 require_once "../src/Configuration.php";
 use FlowrouteNumbersAndMessagingLib\Models;
 
-
 // Create Basic Authentication Object - client - from our Configuration Settings
 // pull our username and password from the config file
-$password = FlowrouteNumbersAndMessagingLib\Configuration::$basicAuthPassword;
-$username = FlowrouteNumbersAndMessagingLib\Configuration::$basicAuthUserName;
+$username = getenv('FR_ACCESS_KEY', true) ?: getenv('FR_ACCESS_KEY');
+$password = getenv('FR_SECRET_KEY', true) ?: getenv('FR_SECRET_KEY');
 
 // create our client object
 $client = new FlowrouteNumbersAndMessagingLib\FlowrouteNumbersAndMessagingClient($username, $password);
@@ -22,20 +21,24 @@ $our_numbers = GetNumbers($client);
 // Send an SMS Message from our account
 //SendSMS($client, $our_numbers[0]);
 
-// Look up a specific MDR
-//GetMDRDetail($client, $our_messages[0]);
+//Using the controller function to look up a specific MDR
+$messages = $client->getMessages();
+$messagedetail =  $messages->getLookUpAMessageDetailRecord("mdr2-41993562fb4911e7a95116862467bfd7");
+echo "Message Detail Record:\n";
+var_dump($messagedetail);
+
 
 // Find details for a specific number
-//$number_details = GetNumberDetails($client, $our_numbers[0]->attributes->value);
+$number_details = GetNumberDetails($client, $our_numbers[0]->attributes->value);
 
 // Find purchasable numbers
-//$available_numbers = GetAvailableNumbers($client);
+$available_numbers = GetAvailableNumbers($client);
 
 // List Available Area Codes
-//$available_areacodes = GetAvailableAreaCodes($client);
+$available_areacodes = GetAvailableAreaCodes($client);
 
 // List available Exchange Codes
-//$available_exchange_codes = GetAvailableExchangeCodes($client);
+$available_exchange_codes = GetAvailableExchangeCodes($client);
 
 // List Inbound Routes
 $inbound_routes = GetInboundRoutes($client);
@@ -43,7 +46,7 @@ $inbound_routes = GetInboundRoutes($client);
 // Create an Inbound Route
 //CreateInboundRoute($client);
 
-// Update Primary Route for a DID
+/* Update Primary Route for a DID
 $route_id = "";
 foreach($inbound_routes as $item)
 {
@@ -79,7 +82,7 @@ function CreateInboundRoute($client)
     $result = $routes->CreateAnInboundRoute($body);
     var_dump($result);
 }
-
+ 
 function UpdatePrimaryRoute($client, $DID, $route_id)
 {
     $routes = $client->getRoutes();
@@ -98,7 +101,7 @@ function GetInboundRoutes($client)
 {
     $return_list = array();
 
-    $limit = 10;
+    $limit = 3;
     $offset = 0;
 
     $routes = $client->getRoutes();
@@ -131,7 +134,7 @@ function GetInboundRoutes($client)
 
     return $return_list;
 }
-
+ */
 function GetAvailableExchangeCodes($client)
 {
     $return_list = array();
@@ -177,7 +180,7 @@ function GetAvailableAreaCodes($client)
 {
     $return_list = array();
 
-    $limit = 100;
+    $limit = 2;
     $offset = 0;
     $maxSetupCost = 10.00;
 
@@ -212,6 +215,7 @@ function GetAvailableAreaCodes($client)
 
     return $return_list;
 }
+ 
 
 function GetAvailableNumbers($client)
 {
@@ -221,7 +225,7 @@ function GetAvailableNumbers($client)
     $rateCenter = NULL;
     $state = NULL;
 
-    $limit = 5;
+    $limit = 2;
     $offset = 0;
 
     $return_list = array();
@@ -255,7 +259,7 @@ function GetAvailableNumbers($client)
 
     return $return_list;
 }
-
+/*
 function GetMDRDetail($client, $id)
 {
     $messages = $client->Messages;
@@ -263,12 +267,12 @@ function GetMDRDetail($client, $id)
     $mdr_data = $messages->GetLookUpAMessageDetailRecord($id);
     echo $mdr_data;
 }
-
-function SendSMS($client, $from_did)
+ 
+/*function SendSMS($client, $from_did)
 {
     $msg = new Message();
     $msg->From = $from_did;
-    $msg->To = "4254664078";
+    $msg->To = "YOUR_MOBILE_NUMBER"; // Replace with your mobile number to receive messages from your Flowroute account
     $msg->Body = "Hi Chris";
 
     $messages = $client->getMessages;
@@ -316,7 +320,7 @@ function GetMessages($client)
 
     return $return_list;
 }
-
+ */
 function GetNumbers($client)
 {
     $return_list = array();
@@ -329,10 +333,10 @@ function GetNumbers($client)
     $numbers = $client->getNumbers();
 
     // query all our numbers
-    $startsWith = NULL;
+    $startsWith = 1646;
     $endsWith = NULL;
     $contains = NULL;
-    $limit = 100;
+    $limit = 3;
     $offset = 0;
 
     $result = $numbers->getAccountPhoneNumbers($startsWith, $endsWith, $contains, $limit, $offset);
@@ -340,11 +344,11 @@ function GetNumbers($client)
 
     foreach($result as $item) {
         foreach($item as $entry) {
-            //var_dump($entry);
-            //echo "--------------------------------------\n";
+            var_dump($entry);
+            echo "--------------------------------------\n";
             $return_list[] = $entry;
         }
-        //echo "--------------------------------------\n";
+        echo "--------------------------------------\n";
     }
 
     return $return_list;
@@ -359,6 +363,5 @@ function GetNumberDetails($client, $id)
     var_dump($result);
     return $result;
 }
-
 
 ?>
