@@ -17,17 +17,18 @@ class Configuration
      * The base Uri for API calls
      * @var string
      */
+
     public static $BASEURI = 'https://api.flowroute.com';
 
     /**
      * The username to use with basic authentication
      * @var string
      */
-    public static $basicAuthUserName = 'TODO: Replace';
+    public static $basicAuthUserName = 'Your Tech Prefix Here';
 
     /**
      * The password to use with basic authentication
      * @var string
      */
-    public static $basicAuthPassword = 'TODO: Replace';
+    public static $basicAuthPassword = 'Your API Secret Key Here';
 }

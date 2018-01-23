@@ -17,31 +17,34 @@ $client = new FlowrouteNumbersAndMessagingLib\FlowrouteNumbersAndMessagingClient
 $our_numbers = GetNumbers($client);
 
 // List all our SMS Messages
-//$our_messages = GetMessages($client);
+$our_messages = GetMessages($client);
 
 // Send an SMS Message from our account
-//SendSMS($client, $our_numbers[0]);
+SendSMS($client, $our_numbers[0]);
+
+// Send an MMS Message from out account
+SendMMS($client, $our_numbers[0]);
 
 // Look up a specific MDR
-//GetMDRDetail($client, $our_messages[0]);
+GetMDRDetail($client, $our_messages[0]);
 
 // Find details for a specific number
-//$number_details = GetNumberDetails($client, $our_numbers[0]->attributes->value);
+$number_details = GetNumberDetails($client, $our_numbers[0]->attributes->value);
 
 // Find purchasable numbers
-//$available_numbers = GetAvailableNumbers($client);
+$available_numbers = GetAvailableNumbers($client);
 
 // List Available Area Codes
-//$available_areacodes = GetAvailableAreaCodes($client);
+$available_areacodes = GetAvailableAreaCodes($client);
 
 // List available Exchange Codes
-//$available_exchange_codes = GetAvailableExchangeCodes($client);
+$available_exchange_codes = GetAvailableExchangeCodes($client);
 
 // List Inbound Routes
 $inbound_routes = GetInboundRoutes($client);
 
 // Create an Inbound Route
-//CreateInboundRoute($client);
+CreateInboundRoute($client);
 
 // Update Primary Route for a DID
 $route_id = "";
@@ -52,7 +55,7 @@ foreach($inbound_routes as $item)
         break;
     }
 }
-echo "Route ID: " . $route_id;
+echo "Route ID: " . $route_id . "\n";
 UpdatePrimaryRoute($client, $our_numbers[0]->id, $route_id);
 
 // Update the Failover Route for a DID
@@ -64,7 +67,9 @@ for ($i = 1; $i < count($inbound_routes); )
         break;
     }
 }
-UpdateFailoverRoute($client, $our_numbers[0]->id, $route_id);
+UpdateFailoverRoute($client, $our_numbers[1]->id, $route_id);
+
+echo "\n\nAll Tests Completed\n";
 
 function CreateInboundRoute($client)
 {
@@ -84,14 +89,12 @@ function UpdatePrimaryRoute($client, $DID, $route_id)
 {
     $routes = $client->getRoutes();
     $result = $routes->UpdatePrimaryVoiceRouteForAPhoneNumber($DID, $route_id);
-    var_dump($result);
 }
 
 function UpdateFailoverRoute($client, $DID, $route_id)
 {
     $routes = $client->getRoutes();
     $result = $routes->UpdateFailoverVoiceRouteForAPhoneNumber($DID, $route_id);
-    var_dump($result);
 }
 
 function GetInboundRoutes($client)
@@ -258,22 +261,42 @@ function GetAvailableNumbers($client)
 
 function GetMDRDetail($client, $id)
 {
-    $messages = $client->Messages;
+    $messages = $client->getMessages();
+    var_dump($id);
 
     $mdr_data = $messages->GetLookUpAMessageDetailRecord($id);
-    echo $mdr_data;
+    var_dump($mdr_data);
 }
 
 function SendSMS($client, $from_did)
 {
-    $msg = new Message();
-    $msg->From = $from_did;
-    $msg->To = "4254664078";
-    $msg->Body = "Hi Chris";
+    $msg = new Models\Message();
+    $msg->from = $from_did->id;
+    // TODO: Replace the number below
+    $msg->to = "4254664078";
+    $msg->body = "This is a Test Message";
+    //$msg->isMms = False;
 
-    $messages = $client->getMessages;
+    $messages = $client->getMessages();
     $result = $messages->CreateSendAMessage($msg);
-    echo $result;
+    var_dump($result);
+}
+
+function SendMMS($client, $from_did)
+{
+    $msg = new Models\MMS_Message();
+    $msg->from = $from_did->id;
+    // TODO: Replace the number below
+    $msg->to = "4254664078";
+    $msg->body = "This is a Test Message";
+    //$msg->mediaUrls = new array();
+    $msg->mediaUrls[] = 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png';
+
+    $messages = $client->getMessages();
+    $result = $messages->CreateSendAMessage($msg);
+    var_dump($result);
+
+
 }
 
 function GetMessages($client)
@@ -296,7 +319,7 @@ function GetMessages($client)
         foreach ($message_data->data as $item)
         {
             echo "---------------------------\nSMS MDR:\n";
-            echo "Attributes:" . $item->attributes . "\nId:" . $item->id . "\nLinks:" . $item.links . "\nType:" . $item->type . "\n";
+            var_dump($item);
             $return_list[] = $item->id;
         }
 
