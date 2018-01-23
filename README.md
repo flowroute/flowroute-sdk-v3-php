@@ -1,5 +1,7 @@
-<div>
-The Flowroute PHP Library v3 provides functions for interacting with [Numbers v2](https://developer.flowroute.com/api/numbers/v2.0/) and [Messages v2.1](https://developer.flowroute.com/api/messages/v2.1/) of the [Flowroute](https://www.flowroute.com) API.
+Flowroute PHP Library v3
+=====================
+
+The Flowroute PHP Library v3 provides methods for interacting with [Numbers v2](https://developer.flowroute.com/api/numbers/v2.0/) and [Messages v2.1](https://developer.flowroute.com/api/messages/v2.1/) of the [Flowroute](https://www.flowroute.com) API.
 
 **Topics**
 
@@ -7,32 +9,26 @@ The Flowroute PHP Library v3 provides functions for interacting with [Numbers v2
 *   [Installation](#installation)
 *   [Usage](#usage)
     *   [Configuration](#configuration)
-
-    *   [Credentials](#credentials)
-    *   [API Client and Controllers](#clientandcontrollers)
-
+        *   [Credentials](#credentials)
+        *   [API Client and Controllers](#instantiate-the-api-client)
     *   [Functions](#functions)
+        *   [Number Management](#number-management)
+            *   [GetAvailableAreaCodes](#getavailableareacodesclient)
+            *   [GetAvailableExchangeCodes](#getavailableexchangecodesclient)
+            *   [GetAvailableNumbers](#getavailablenumbersclient)
+            *   [GetNumbers](#getnumbersclient)
+            *   [GetNumberDetails](#getnumberdetailsclient-string-id)
 
-    *   [Number Management](#numbermanagement)
+        *   [Route Management](#route-management)
+            *   [CreateInboundRoute](#createinboundrouteclient)
+            *   [GetInboundRoutes](#getinboundroutesclient-did-route_id)
+            *   [UpdatePrimaryRoute](#updateprimaryrouteclient-did-route_id)
+            *   [UpdateFailoverRoute](#updatefailoverrouteclient-did-route_id)
 
-    *   [GetAvailableAreaCodes](#list_available_area_codes)
-    *   [GetAvailableExchangeCodes](#list_available_exchange_codes)
-    *   [GetAvailableNumbers](#search_for_purchasable_phone_numbers)
-    *   [GetNumbers](#list_account_phone_numbers)
-    *   [GetNumberDetails](#list_phone_number_details)
-
-    *   [Route Management](#routemanagement)
-
-    *   [CreateInboundRoute](#create_an_inbound_route)
-    *   [GetInboundRoutes](#list_inbound_routes)
-    *   [UpdatePrimaryRoute](#update_primary_voice_routenumber_id)
-    *   [UpdateFailoverRoute](#update_failover_voice_routenumber_id)
-
-    *   [Messaging](#messaging)
-
-    *   [SendSMS](#send_a_message)
-    *   [GetMessages](#look_up_a_set_of_messages)
-    *   [GetMDRDetail](#look_up_a_message_detail_record)
+        *   [Messaging](#messaging)
+            *   [SendSMS](#sendsmsclient-from_did)
+            *   [GetMessages](#getmessagesclient)
+            *   [GetMDRDetail](#getmdrdetailclient-id)
 
     *   [Errors](#errors)
 
@@ -62,7 +58,7 @@ The Flowroute PHP Library v3 provides functions for interacting with [Numbers v2
 
 3.  Download [Composer](https://getcomposer.org/download/) in the same directory. PHP Library v3 comes with a **composer.json** listing the project dependencies and other metadata. Run the following:
 
-    php composer.phar install
+        php composer.phar install
 
 * * *
 
@@ -70,11 +66,11 @@ The Flowroute PHP Library v3 provides functions for interacting with [Numbers v2
 
 In Flowroute's approach to building the PHP library v3, HTTP requests are handled by an API client object accessed by functions defined in **testSDK.php** located within the **test** subdirectory. First, switch to the **test** directory and open the demo file.
 
-<span class="code-language">Change directory</span>
+###### Change directory
 
     cd test
 
-<span class="code-language">Open test file</span>
+###### Open test file
 
     vim testSDK.php
 

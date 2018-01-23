@@ -4,8 +4,7 @@ require_once "../vendor/autoload.php";
 require_once "../src/Configuration.php";
 use FlowrouteNumbersAndMessagingLib\Models;
 
-// Create Basic Authentication Object - client - from our Configuration Settings
-// pull our username and password from the config file
+// Access your Flowroute API credentials as local environment variables
 $username = getenv('FR_ACCESS_KEY', true) ?: getenv('FR_ACCESS_KEY');
 $password = getenv('FR_SECRET_KEY', true) ?: getenv('FR_SECRET_KEY');
 
@@ -44,9 +43,9 @@ $available_exchange_codes = GetAvailableExchangeCodes($client);
 $inbound_routes = GetInboundRoutes($client);
 
 // Create an Inbound Route
-//CreateInboundRoute($client);
+CreateInboundRoute($client);
 
-/* Update Primary Route for a DID
+// Update Primary Route for a DID
 $route_id = "";
 foreach($inbound_routes as $item)
 {
@@ -134,7 +133,7 @@ function GetInboundRoutes($client)
 
     return $return_list;
 }
- */
+
 function GetAvailableExchangeCodes($client)
 {
     $return_list = array();
@@ -259,7 +258,7 @@ function GetAvailableNumbers($client)
 
     return $return_list;
 }
-/*
+
 function GetMDRDetail($client, $id)
 {
     $messages = $client->Messages;
@@ -268,7 +267,7 @@ function GetMDRDetail($client, $id)
     echo $mdr_data;
 }
  
-/*function SendSMS($client, $from_did)
+function SendSMS($client, $from_did)
 {
     $msg = new Message();
     $msg->From = $from_did;
@@ -320,7 +319,7 @@ function GetMessages($client)
 
     return $return_list;
 }
- */
+ 
 function GetNumbers($client)
 {
     $return_list = array();
