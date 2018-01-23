@@ -273,6 +273,7 @@ function SendSMS($client, $from_did)
     $msg->From = $from_did;
     $msg->To = "YOUR_MOBILE_NUMBER"; // Replace with your mobile number to receive messages from your Flowroute account
     $msg->Body = "This is a Test Message";
+}
 
 function SendMMS($client, $from_did)
 {
