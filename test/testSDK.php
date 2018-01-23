@@ -4,11 +4,9 @@ require_once "../vendor/autoload.php";
 require_once "../src/Configuration.php";
 use FlowrouteNumbersAndMessagingLib\Models;
 
-
-// Create Basic Authentication Object - client - from our Configuration Settings
-// pull our username and password from the config file
-$password = FlowrouteNumbersAndMessagingLib\Configuration::$basicAuthPassword;
-$username = FlowrouteNumbersAndMessagingLib\Configuration::$basicAuthUserName;
+// Access your Flowroute API credentials as local environment variables
+$username = getenv('FR_ACCESS_KEY', true) ?: getenv('FR_ACCESS_KEY');
+$password = getenv('FR_SECRET_KEY', true) ?: getenv('FR_SECRET_KEY');
 
 // create our client object
 $client = new FlowrouteNumbersAndMessagingLib\FlowrouteNumbersAndMessagingClient($username, $password);
@@ -84,7 +82,7 @@ function CreateInboundRoute($client)
     $result = $routes->CreateAnInboundRoute($body);
     var_dump($result);
 }
-
+ 
 function UpdatePrimaryRoute($client, $DID, $route_id)
 {
     $routes = $client->getRoutes();
@@ -101,7 +99,7 @@ function GetInboundRoutes($client)
 {
     $return_list = array();
 
-    $limit = 10;
+    $limit = 3;
     $offset = 0;
 
     $routes = $client->getRoutes();
@@ -180,7 +178,7 @@ function GetAvailableAreaCodes($client)
 {
     $return_list = array();
 
-    $limit = 100;
+    $limit = 2;
     $offset = 0;
     $maxSetupCost = 10.00;
 
@@ -215,6 +213,7 @@ function GetAvailableAreaCodes($client)
 
     return $return_list;
 }
+ 
 
 function GetAvailableNumbers($client)
 {
@@ -224,7 +223,7 @@ function GetAvailableNumbers($client)
     $rateCenter = NULL;
     $state = NULL;
 
-    $limit = 5;
+    $limit = 2;
     $offset = 0;
 
     $return_list = array();
@@ -267,36 +266,25 @@ function GetMDRDetail($client, $id)
     $mdr_data = $messages->GetLookUpAMessageDetailRecord($id);
     var_dump($mdr_data);
 }
-
+ 
 function SendSMS($client, $from_did)
 {
-    $msg = new Models\Message();
-    $msg->from = $from_did->id;
-    // TODO: Replace the number below
-    $msg->to = "4254664078";
-    $msg->body = "This is a Test Message";
-    //$msg->isMms = False;
-
-    $messages = $client->getMessages();
-    $result = $messages->CreateSendAMessage($msg);
-    var_dump($result);
-}
+    $msg = new Message();
+    $msg->From = $from_did;
+    $msg->To = "YOUR_MOBILE_NUMBER"; // Replace with your mobile number to receive messages from your Flowroute account
+    $msg->Body = "This is a Test Message";
 
 function SendMMS($client, $from_did)
 {
     $msg = new Models\MMS_Message();
     $msg->from = $from_did->id;
     // TODO: Replace the number below
-    $msg->to = "4254664078";
+    $msg->to = "XXXXXXXXX";
     $msg->body = "This is a Test Message";
-    //$msg->mediaUrls = new array();
     $msg->mediaUrls[] = 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png';
 
     $messages = $client->getMessages();
     $result = $messages->CreateSendAMessage($msg);
-    var_dump($result);
-
-
 }
 
 function GetMessages($client)
@@ -339,7 +327,7 @@ function GetMessages($client)
 
     return $return_list;
 }
-
+ 
 function GetNumbers($client)
 {
     $return_list = array();
@@ -352,10 +340,10 @@ function GetNumbers($client)
     $numbers = $client->getNumbers();
 
     // query all our numbers
-    $startsWith = NULL;
+    $startsWith = 1646;
     $endsWith = NULL;
     $contains = NULL;
-    $limit = 100;
+    $limit = 3;
     $offset = 0;
 
     $result = $numbers->getAccountPhoneNumbers($startsWith, $endsWith, $contains, $limit, $offset);
@@ -363,11 +351,11 @@ function GetNumbers($client)
 
     foreach($result as $item) {
         foreach($item as $entry) {
-            //var_dump($entry);
-            //echo "--------------------------------------\n";
+            var_dump($entry);
+            echo "--------------------------------------\n";
             $return_list[] = $entry;
         }
-        //echo "--------------------------------------\n";
+        echo "--------------------------------------\n";
     }
 
     return $return_list;
@@ -382,6 +370,5 @@ function GetNumberDetails($client, $id)
     var_dump($result);
     return $result;
 }
-
 
 ?>

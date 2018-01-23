@@ -76,7 +76,7 @@ class RoutesController extends BaseController
 
         //prepare headers
         $_headers = array (
-            'user-agent'    => 'APIMATIC 2.0'
+            'user-agent'    => 'Flowroute SDK v3.0'
         );
 
         //set HTTP basic auth parameters
@@ -136,7 +136,7 @@ class RoutesController extends BaseController
 
         //prepare headers
         $_headers = array (
-            'user-agent'    => 'APIMATIC 2.0',
+            'user-agent'    => 'Flowroute SDK v3.0',
             'content-type'  => 'application/json; charset=utf-8'
         );
 
@@ -210,7 +210,7 @@ class RoutesController extends BaseController
 
         //prepare headers
         $_headers = array (
-            'user-agent'    => 'APIMATIC 2.0',
+            'user-agent'    => 'Flowroute SDK v3.0',
             'content-type'  => 'application/json; charset=utf-8'
         );
 
@@ -290,7 +290,7 @@ class RoutesController extends BaseController
         //prepare headers
         $_headers = array (
             'content-type'  => 'application/json; charset=utf-8',
-            'user-agent'    => 'APIMATIC 2.0'
+            'user-agent'    => 'Flowroute SDK v3.0'
         );
 
         //set HTTP basic auth parameters

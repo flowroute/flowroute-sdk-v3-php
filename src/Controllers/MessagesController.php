@@ -84,7 +84,7 @@ class MessagesController extends BaseController
 
         //prepare headers
         $_headers = array (
-            'user-agent'    => 'APIMATIC 2.0',
+            'user-agent'    => 'Flowroute SDK v3.0',
             'Accept'        => 'application/json'
         );
 
@@ -149,8 +149,13 @@ class MessagesController extends BaseController
 
         //prepare headers
         $_headers = array (
+<<<<<<< HEAD
             'user-agent'    => 'APIMATIC 2.0',
             'content-type'  => 'application/vnd.api+json'
+=======
+            'user-agent'    => 'Flowroute SDK v3.0',
+            'content-type'  => 'application/json; charset=utf-8'
+>>>>>>> 260afe4f8ad3e1a3a696c621dd708c4e6fd07262
         );
 
         //set HTTP basic auth parameters
@@ -233,7 +238,7 @@ class MessagesController extends BaseController
 
         //prepare headers
         $_headers = array (
-            'user-agent'    => 'APIMATIC 2.0',
+            'user-agent'    => 'Flowroute SDK v3.0',
             'Accept'        => 'application/json'
         );
 
