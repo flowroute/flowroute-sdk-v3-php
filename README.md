@@ -31,6 +31,7 @@ The Flowroute PHP Library v3 provides methods for interacting with [Numbers v2](
             *   [GetMDRDetail](#getmdrdetailclient-id)
 
     *   [Errors](#errors)
+    *   [Testing](#testing)
 
 * * *
 
@@ -882,4 +883,9 @@ In cases of HTTP errors, the PHP library displays a pop-up window with an error 
 
     PHP Fatal error:  Uncaught FlowrouteNumbersAndMessagingLib\Exceptions\ErrorException: Unauthorized – There was an issue with your API credentials.
 
-</div>
+## Testing
+
+Once you are done configuring your Flowroute API credentials and updating the function parameters, run the file to see the demo in action:
+```php
+php testSDK.php
+```
