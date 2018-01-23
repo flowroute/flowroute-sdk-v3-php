@@ -21,13 +21,13 @@ class Configuration
     public static $BASEURI = 'https://api.flowroute.com';
 
     /**
-     * The username to use with basic authentication
+     * Your Flowroute Tech-Prefix which serves as your username
      * @var string
      */
     public static $basicAuthUserName = 'Your Tech Prefix Here';
 
     /**
-     * The password to use with basic authentication
+     * Your Flowroute API Secret Key which serves as your password
      * @var string
      */
     public static $basicAuthPassword = 'Your API Secret Key Here';
