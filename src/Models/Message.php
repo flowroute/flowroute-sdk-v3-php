@@ -98,28 +98,19 @@ class MMS_Message implements JsonSerializable
     public $mediaUrls;
 
     /**
-     * @Set to True
-     * @maps is_mms
-     * @var bool|NULL $isMms public property
-     */
-    //public $isMms;
-
-    /**
      * Constructor to set initial or default values of member properties
      * @param string $from      Initialization value for $this->from
      * @param string $to        Initialization value for $this->to
      * @param string $body      Initialization value for $this->body
      * @param array  $mediaUrls Initialization value for $this->mediaUrls
-     * @param bool   $isMms     Initialization value for $this->isMms
      */
     public function __construct()
     {
-        if (5 == func_num_args()) {
+        if (4 == func_num_args()) {
             $this->from      = func_get_arg(0);
             $this->to        = func_get_arg(1);
             $this->body      = func_get_arg(2);
             $this->mediaUrls = func_get_arg(3);
-            //$this->isMms     = func_get_arg(4);
         }
     }
 
@@ -134,7 +125,6 @@ class MMS_Message implements JsonSerializable
         $json['to']         = $this->to;
         $json['body']       = $this->body;
         $json['media_urls'] = $this->mediaUrls;
-        //$json['is_mms']     = $this->isMms;
 
         return $json;
     }
