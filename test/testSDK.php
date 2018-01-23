@@ -269,7 +269,7 @@ function GetMDRDetail($client, $id)
  
 function SendSMS($client, $from_did)
 {
-    $msg = new Message();
+    $msg = new Models\Message();
     $msg->From = $from_did;
     $msg->To = "YOUR_MOBILE_NUMBER"; // Replace with your mobile number to receive messages from your Flowroute account
     $msg->Body = "This is a Test Message";
@@ -280,7 +280,7 @@ function SendMMS($client, $from_did)
     $msg = new Models\MMS_Message();
     $msg->from = $from_did->id;
     // TODO: Replace the number below
-    $msg->to = "XXXXXXXXX";
+    $msg->to = "YOUR_MOBILE_NUMBER";
     $msg->body = "This is a Test Message";
     $msg->mediaUrls[] = 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png';
 
