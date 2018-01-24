@@ -57,7 +57,7 @@ echo "Route ID: " . $route_id . "\n";
 UpdatePrimaryRoute($client, $our_numbers[0]->id, $route_id);
 
 // Update the Failover Route for a DID
-for ($i = 1; $i < count($inbound_routes); )
+for ($i = 1; $i < count($inbound_routes); $i++ )
 {
     $item = $inbound_routes[$i];
     if($item->attributes->route_type == "host") {
@@ -270,9 +270,10 @@ function GetMDRDetail($client, $id)
 function SendSMS($client, $from_did)
 {
     $msg = new Models\Message();
-    $msg->From = $from_did;
-    $msg->To = "YOUR_MOBILE_NUMBER"; // Replace with your mobile number to receive messages from your Flowroute account
-    $msg->Body = "This is a Test Message";
+    var_dump($from_did);
+    $msg->from = $from_did->id;
+    $msg->to = "YOUR_MOBILE_NUMBER"; // Replace with your mobile number to receive messages from your Flowroute account
+    $msg->body = "This is a Test Message";
 }
 
 function SendMMS($client, $from_did)
@@ -341,10 +342,10 @@ function GetNumbers($client)
     $numbers = $client->getNumbers();
 
     // query all our numbers
-    $startsWith = 1646;
+    $startsWith = NULL;
     $endsWith = NULL;
     $contains = NULL;
-    $limit = 3;
+    $limit = 10;
     $offset = 0;
 
     $result = $numbers->getAccountPhoneNumbers($startsWith, $endsWith, $contains, $limit, $offset);
