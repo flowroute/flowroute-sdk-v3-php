@@ -551,6 +551,19 @@ paths:
             Offsets the list of routes by your specified value. For example, if
             you have 4 inbound routes and you entered 1 as your offset value,
             then only 3 of your routes will be displayed in the response.
+        - in: query
+          name: route_type
+          required: false
+          schema:
+            type: string
+            enum:
+              - host
+              - sip-reg
+              - uri
+              - number
+          description: >-
+            Restricts the results to inbound routes with your specified route
+            type.
       tags:
         - routes
       responses:
@@ -589,6 +602,9 @@ components:
             format: uri
         is_mms:
           type: boolean
+        dlr_callback:
+          type: string
+          format: url
     MessageSuccess:
       type: object
       properties:
