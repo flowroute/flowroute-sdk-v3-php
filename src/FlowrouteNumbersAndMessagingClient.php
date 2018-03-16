@@ -48,4 +48,20 @@ class FlowrouteNumbersAndMessagingClient
     {
         return Controllers\RoutesController::getInstance();
     }
+    /**
+     * Singleton access to the E911 controller
+     * @return Controllers\RoutesController The *Singleton* instance
+     */
+    public function getE911s()
+    {
+        return Controllers\E911Controller::getInstance();
+    }
+    /**
+     * Singleton access to CNAMs controller
+     * @return Controllers\CNAMSController The *Singleton* instance
+     */
+    public function getCNAMS()
+    {
+        return Controllers\CNAMController::getInstance();
+    }
 }
