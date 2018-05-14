@@ -30,7 +30,7 @@ class E911Controller extends BaseController
 
     /**
      * Returns the *Singleton* instance of this class.
-     * @return RoutesController The *Singleton* instance.
+     * @return PortingController The *Singleton* instance.
      */
     public static function getInstance()
     {

@@ -64,4 +64,12 @@ class FlowrouteNumbersAndMessagingClient
     {
         return Controllers\CNAMController::getInstance();
     }
+    /**
+     * Singleton access to Porting controller
+     * @return Controllers\PortingController The *Singleton* instance
+     */
+    public function getPorting()
+    {
+        return Controllers\PortingController::getInstance();
+    }
 }

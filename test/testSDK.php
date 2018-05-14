@@ -38,6 +38,9 @@ $available_areacodes = GetAvailableAreaCodes($client);
 // List available Exchange Codes
 $available_exchange_codes = GetAvailableExchangeCodes($client);
 
+// List available PoPs
+$pops = GetAvailablePops($client);
+
 // List Inbound Routes
 $inbound_routes = GetInboundRoutes($client);
 
@@ -67,8 +70,14 @@ for ($i = 1; $i < count($inbound_routes); $i++ )
 }
 UpdateFailoverRoute($client, $our_numbers[1]->id, $route_id);
 
+// Check number portability
+CheckPortability($client);
+
+
+
 echo "\n\nAll Tests Completed\n";
 
+// ---------------------- Helper Functions -------------------------------
 function CreateInboundRoute($client)
 {
     $routes = $client->getRoutes();
@@ -78,6 +87,7 @@ function CreateInboundRoute($client)
     $body->data->attributes->alias = "Test Route";
     $body->data->attributes->routeType = Models\RouteTypeEnum::HOST;
     $body->data->attributes->value = "www.flowroute.com";
+    $boyd->data->attributes->edge_strategy_id = 2;
 
     $result = $routes->CreateAnInboundRoute($body);
     var_dump($result);
@@ -99,7 +109,7 @@ function GetInboundRoutes($client)
 {
     $return_list = array();
 
-    $limit = 3;
+    $limit = 10;
     $offset = 0;
 
     $routes = $client->getRoutes();
@@ -178,7 +188,7 @@ function GetAvailableAreaCodes($client)
 {
     $return_list = array();
 
-    $limit = 2;
+    $limit = 10;
     $offset = 0;
     $maxSetupCost = 10.00;
 
@@ -223,7 +233,7 @@ function GetAvailableNumbers($client)
     $rateCenter = NULL;
     $state = NULL;
 
-    $limit = 2;
+    $limit = 10;
     $offset = 0;
 
     $return_list = array();
@@ -272,7 +282,7 @@ function SendSMS($client, $from_did)
     $msg = new Models\Message();
     var_dump($from_did);
     $msg->from = $from_did->id;
-    $msg->to = "YOUR_MOBILE_NUMBER"; // Replace with your mobile number to receive messages from your Flowroute account
+    $msg->to = "YOUR NUMBER HERE"; // Replace with your mobile number to receive messages from your Flowroute account
     $msg->body = "This is a Test Message";
 }
 
@@ -281,7 +291,7 @@ function SendMMS($client, $from_did)
     $msg = new Models\MMS_Message();
     $msg->from = $from_did->id;
     // TODO: Replace the number below
-    $msg->to = "YOUR_MOBILE_NUMBER";
+    $msg->to = "YOUR NUMBER HERE";
     $msg->body = "This is a Test Message";
     $msg->mediaUrls[] = 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png';
 
@@ -292,10 +302,10 @@ function SendMMS($client, $from_did)
 function GetMessages($client)
 {
     $return_list = array();
-    $limit = 1;
+    $limit = 10;
     $offset = 0;
 
-    // Find all messages since January 1, 2017
+    // Find all messages since January 1, 2018
     $startDate = new DateTime('2018-01-01', new DateTimeZone('Pacific/Nauru'));
 
     $endDate = NULL;
@@ -303,6 +313,11 @@ function GetMessages($client)
     do
     {
         $messages = $client->getMessages();
+        echo "calling lookup on ";
+        var_dump($startDate);
+        var_dump($endDate);
+        var_dump($limit);
+        var_dump($offset);
         $message_data = $messages->getLookUpASetOfMessages($startDate, $endDate, $limit, $offset);
 
         // Iterate through each number item
@@ -370,6 +385,30 @@ function GetNumberDetails($client, $id)
     echo "Calling gnd with " . $id;
     $result = $numbers->getPhoneNumberDetails($id);
     var_dump($result);
+    return $result;
+}
+
+function GetAvailablePops($client)
+{
+    $routes = $client->getRoutes();
+    $result = $routes->listPops();
+    echo "Available Edge Pops";
+    echo "--------------------------------------\n";
+    var_dump($result);
+    echo "\n--------------------------------------\n";
+    return $result;
+}
+
+function CheckPortability($client)
+{
+    $portability = $client->getPorting();
+    echo "\nChecking Portability\n";
+    echo "--------------------------------------\n";
+    $porting_numbers = new Models\Portability(array('+14254445555', '+14254446666'));
+
+    $result = $portability->checkPortability($porting_numbers->jsonSerialize());
+    var_dump($result);
+    echo "\n--------------------------------------\n";
     return $result;
 }
 
