@@ -165,4 +165,37 @@ class E911Controller extends BaseController
         return $response->body;
     }
 
+    public function validate_address($body) {
+
+
+    }
+
+    public function create_address($body) {
+
+    }
+
+    public function update_address($body) {
+
+    }
+
+    public function delete_address($id) {
+
+    }
+
+    public function associate_did($did_id, $e911_id) {
+
+    }
+
+    public function unassociate_did($did_id) {
+
+
+    }
+
+    public function list_dids_for_address($e911_id) {
+
+
+    }
+
+
+
 }

@@ -61,8 +61,8 @@ class NumbersController extends BaseController
         $startsWith = NULL,
         $endsWith = NULL,
         $contains = NULL,
-        $limit = NULL,
-        $offset = NULL
+        $limit = 10,
+        $offset = 0
     ) {
 
         //the base uri for api requests

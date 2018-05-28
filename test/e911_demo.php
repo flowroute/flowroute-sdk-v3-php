@@ -11,15 +11,37 @@ $password = getenv('FR_SECRET_KEY', true) ?: getenv('FR_SECRET_KEY');
 // create our client object
 $client = new FlowrouteNumbersAndMessagingLib\FlowrouteNumbersAndMessagingClient($username, $password);
 
+// List all our E911 Records
 $e911_list = getE911s($client);
+echo "--List all E911 Records\n";
+var_dump($e911_list);
 
+// List E911 Record Details
+echo "--List detail information for an E911 Record\n"
 $detail_id = $e911_list[0]->id;
-echo "\nDetail id is " . $detail_id . "\n";
 $detail_record = $client->getE911s()->get_e911_details($detail_id);
 var_dump($detail_record);
 
+// Validate an E911 Address
+echo "--Validate an E911 Address\n"
 
-// Helper Functions
+
+// Validate an E911 Address
+
+// Create an E911 Address
+
+// Update an E911 Address
+
+// Associate an E911 Address with a DID
+
+// Un-associate an E911 Address from a DID
+
+// Delete an E911 Address
+
+
+
+
+// Helper Functions ------------------------------------------------------------
 function getE911s($client)
 {
     $limit = 10;

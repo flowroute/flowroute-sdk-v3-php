@@ -11,47 +11,87 @@ $password = getenv('FR_SECRET_KEY', true) ?: getenv('FR_SECRET_KEY');
 // create our client object
 $client = new FlowrouteNumbersAndMessagingLib\FlowrouteNumbersAndMessagingClient($username, $password);
 
+// Get a list of our DIDs to work with
+echo "Grab our DIDs so we have something to work with";
+$numbers = $client->getNumbers();
+
+// query all our numbers
+$startsWith = NULL;
+$endsWith = NULL;
+$contains = NULL;
+$limit = 10;
+$offset = 0;
+
+$ourDIDs = GetNumbers($client);
+var_dump($our_DIDs);
+
 // List all our CNAM Records
-$our_cnams = GetCNAMs($client);
+echo "Now list all our CNAM Records regardless of status.";
+$our_cnams = GetCNAMs($client, False);
 
 // Create a CNAM Record
-$new_record = $client->getCNAMS()->createCNAM('Flowroute');
-var_dump($new_record);
+//$cnam_value = 'Flowroute' . generateRandomString(4);
+//$new_record = $client->getCNAMS()->createCNAM($cnam_value);
+//var_dump($new_record);
+//
+//wait_for_user("New Record Created");
+//echo "CNAM Records cannot be associated with DIDs until they have been approved.  Typically within 24 hours.";
 
-$new_record = $new_record->data;
-$new_record = $new_record->id;
+echo "Listing only Approved CNAM Records";
+// List approved CNAM records
+$our_cnams = GetCNAMs($client, True);
 
-wait_for_user("New Record Created");
+if (count($our_cnams) == 0)
+{
+    echo "No currently approved CNAM records. This is as far as the demo can run until you have some records ready for use.";
+    exit();
+}
+
+// CNAM Details
+echo "List CNAM Details " . $our_cnams[0]->id . "\n";
+$result = $client->getCNAMS()->getCNAMdetails($our_cnams[0]->id);
+var_dump($result);
+
 // Associate a CNAM Record with a DID
-$result = $client->getCNAMS()->associateCNAM($new_record, '12066417659');
+echo "Associate a CNAM record with one of our DIDs.";
+$did = $ourDIDs[0]->id;
+$cnam_value = $our_cnams[0]->attributes->value;
+$cnam_id =  $our_cnams[0]->id;
+echo "CNAM ID " . $cnam_id . "\n";
+echo "DID ID " . $did . "\n";
+$result = $client->getCNAMS()->associateCNAM($cnam_id, $did);
 var_dump($result);
 
 wait_for_user("New Record Associated");
-$result = $client->getCNAMS()->unassociateCNAM('12066417659');
+
+// Un-associate the new CNAM Record from our DID
+$result = $client->getCNAMS()->unassociateCNAM($did);
 var_dump($result);
 
 wait_for_user("New Record Unassociated");
-$result = $client->getCNAMS()->deleteCNAM($new_record);
+
+// Delete the CNAM Record used
+$result = $client->getCNAMS()->deleteCNAM($cnam_id);
 var_dump($result);
 
 wait_for_user("New Record Deleted");
 
 
-// Helper Functions
+// Helper Functions -----------------------------------------------------------
 function wait_for_user($prompt)
 {
-    echo $prompt;
+    echo $prompt . " - Please press Enter to continue.";
     $handle = fopen ("php://stdin","r");
     $line = fgets($handle);
     fclose($handle);
 }
 
-function GetCNAMs($client)
+function GetCNAMs($client, $approved)
 {
     $startsWith = NULL;
     $contains = NULL;
     $endsWith = NULL;
-    $is_approved = NULL;
+    $is_approved = $approved;
 
     $limit = 10;
     $offset = 0;
@@ -85,6 +125,50 @@ function GetCNAMs($client)
             break;   // no more data
         }
     } while (true);
+
+    return $return_list;
+}
+
+
+function generateRandomString($length = 10) {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $charactersLength = strlen($characters);
+    $randomString = '';
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[rand(0, $charactersLength - 1)];
+    }
+    return $randomString;
+}
+
+function GetNumbers($client)
+{
+    $return_list = array();
+
+    // List all phone numbers in our account paging through them 1 at a time
+    //  If you have several phone numbers, change the 'limit' variable below
+    //  This example is intended to show how to page through a list of resources
+
+    // create a numbers instance
+    $numbers = $client->getNumbers();
+
+    // query all our numbers
+    $startsWith = NULL;
+    $endsWith = NULL;
+    $contains = NULL;
+    $limit = 10;
+    $offset = 0;
+
+    $result = $numbers->getAccountPhoneNumbers($startsWith, $endsWith, $contains, $limit, $offset);
+    //var_dump($result);
+
+    foreach($result as $item) {
+        foreach($item as $entry) {
+            var_dump($entry);
+            echo "--------------------------------------\n";
+            $return_list[] = $entry;
+        }
+        echo "--------------------------------------\n";
+    }
 
     return $return_list;
 }

@@ -11,20 +11,11 @@ $password = getenv('FR_SECRET_KEY', true) ?: getenv('FR_SECRET_KEY');
 // create our client object
 $client = new FlowrouteNumbersAndMessagingLib\FlowrouteNumbersAndMessagingClient($username, $password);
 
+// ---------------- Numbers --------------------
+
 // List all our numbers
 $our_numbers = GetNumbers($client);
-
-// List all our SMS Messages
-$our_messages = GetMessages($client);
-
-// Send an SMS Message from our account
-SendSMS($client, $our_numbers[0]);
-
-// Send an MMS Message from out account
-SendMMS($client, $our_numbers[0]);
-
-// Look up a specific MDR
-GetMDRDetail($client, $our_messages[0]);
+exit();
 
 // Find details for a specific number
 $number_details = GetNumberDetails($client, $our_numbers[0]->attributes->value);
@@ -37,6 +28,27 @@ $available_areacodes = GetAvailableAreaCodes($client);
 
 // List available Exchange Codes
 $available_exchange_codes = GetAvailableExchangeCodes($client);
+
+// Purchase a DID
+
+// ---------------- Messaging --------------------
+
+// List all our SMS Messages
+$our_messages = GetMessages($client);
+
+// Set our global SMS Callback URL
+$result = SetSMSCallback($client, "http://www.example.com");
+
+// Send an SMS Message from our account
+SendSMS($client, $our_numbers[0]);
+
+// Send an MMS Message from out account
+SendMMS($client, $our_numbers[0]);
+
+// Look up a specific MDR
+GetMDRDetail($client, $our_messages[0]);
+
+// ---------------- Routes --------------------
 
 // List available PoPs
 $pops = GetAvailablePops($client);
@@ -70,10 +82,10 @@ for ($i = 1; $i < count($inbound_routes); $i++ )
 }
 UpdateFailoverRoute($client, $our_numbers[1]->id, $route_id);
 
+// ---------------- Portability --------------------
+
 // Check number portability
 CheckPortability($client);
-
-
 
 echo "\n\nAll Tests Completed\n";
 
@@ -288,7 +300,7 @@ function SendSMS($client, $from_did)
 
 function SendMMS($client, $from_did)
 {
-    $msg = new Models\MMS_Message();
+    $msg = new Models\Message();
     $msg->from = $from_did->id;
     // TODO: Replace the number below
     $msg->to = "YOUR NUMBER HERE";
@@ -297,6 +309,28 @@ function SendMMS($client, $from_did)
 
     $messages = $client->getMessages();
     $result = $messages->CreateSendAMessage($msg);
+}
+
+function SetSMSCallback($client, $url)
+{
+    $body = new Models\MessageCallback();
+    $body->callback_url = $url;
+
+    $messages = $client->getMessages();
+    $result = $messages->setAccountSMSCallback($body);
+
+    return($result);
+}
+
+function SetDIDCallback($client, $did, $url)
+{
+    $body = new Models\MessageCallback();
+    $body->callback_url = $url;
+
+    $messages = $client->getMessages();
+    $result = $messages->setDIDSMSCallback($did, $body);
+
+    return($result);
 }
 
 function GetMessages($client)
