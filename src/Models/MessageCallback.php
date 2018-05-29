@@ -8,30 +8,27 @@
 namespace FlowrouteNumbersAndMessagingLib\Models;
 
 use JsonSerializable;
-
 /**
- * @todo Write general description for this model
+ * @This class encapsulates the properties of an SMS Callback URL
  */
-class NewRoute implements JsonSerializable
+class MessageCallback implements JsonSerializable
 {
     /**
-     * @todo Write general description for this property
-     * @var \FlowrouteNumbersAndMessagingLib\Models\Data61|null $data public property
+     * @The callback url requested
+     * @var string $from public property
      */
-    public $data;
-    public $edge_strategy;
+    public $callback_url;
 
     /**
      * Constructor to set initial or default values of member properties
-     * @param Data61 $data Initialization value for $this->data
+     * @param string $callback_url Initialization value for $this->callback_url
      */
     public function __construct()
     {
         if (1 == func_num_args()) {
-            $this->data = func_get_arg(0);
+            $this->callback_url = func_get_arg(0);
         }
     }
-
 
     /**
      * Encode this object to JSON
@@ -39,7 +36,7 @@ class NewRoute implements JsonSerializable
     public function jsonSerialize()
     {
         $json = array();
-        $json['data'] = $this->data;
+        $json['callback_url'] = $this->callback_url;
 
         return $json;
     }

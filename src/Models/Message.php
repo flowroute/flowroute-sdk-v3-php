@@ -35,6 +35,12 @@ class Message implements JsonSerializable
     public $body;
 
     /**
+     * @optional callback URL
+     * @var string|NULL $body public property
+     */
+    public $callback_url;
+
+    /**
      * Constructor to set initial or default values of member properties
      * @param string $from      Initialization value for $this->from
      * @param string $to        Initialization value for $this->to
@@ -47,6 +53,13 @@ class Message implements JsonSerializable
             $this->to        = func_get_arg(1);
             $this->body      = func_get_arg(2);
         }
+
+        if (4 == func_num_args()) {
+            $this->from      = func_get_arg(0);
+            $this->to        = func_get_arg(1);
+            $this->body      = func_get_arg(2);
+            $this->callback_url = func_get_arg(3);
+        }
     }
 
     /**
@@ -58,6 +71,10 @@ class Message implements JsonSerializable
         $json['from']       = $this->from;
         $json['to']         = $this->to;
         $json['body']       = $this->body;
+        if($this->callback_url != NULL)
+        {
+            $json['dlr_callback'] = $this->callback_url;
+        }
 
         return $json;
     }

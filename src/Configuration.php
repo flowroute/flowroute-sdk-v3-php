@@ -24,11 +24,11 @@ class Configuration
      * Your Flowroute Tech-Prefix which serves as your username
      * @var string
      */
-    public static $basicAuthUserName = 'Your Tech Prefix Here';
+    public static $basicAuthUserName = '22476860';
 
     /**
      * Your Flowroute API Secret Key which serves as your password
      * @var string
      */
-    public static $basicAuthPassword = 'Your API Secret Key Here';
+    public static $basicAuthPassword = 'FYzckHAgBdHm1QpKbe6jdMivOWFlnApf';
 }

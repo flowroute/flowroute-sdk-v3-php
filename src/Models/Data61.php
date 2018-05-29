@@ -27,13 +27,25 @@ class Data61 implements JsonSerializable
     public $attributes;
 
     /**
+     * @todo Write general description for this property
+     * @var integer|null $edge_strategy_id public property
+     */
+    public $edge_strategy_id;
+
+    /**
      * Constructor to set initial or default values of member properties
-     * @param string       $type       Initialization value for $this->type
-     * @param Attributes62 $attributes Initialization value for $this->attributes
+     * @param string       $type             Initialization value for $this->type
+     * @param Attributes62 $attributes       Initialization value for $this->attributes
+     * @param integer      $edge_strategy_id Initialization value for $this->edge_strategy_id
      */
     public function __construct()
     {
         switch (func_num_args()) {
+            case 3:
+                $this->type       = func_get_arg(0);
+                $this->attributes = func_get_arg(1);
+                $this->edge_strategy_id = func_get_arg(2);
+                break;
             case 2:
                 $this->type       = func_get_arg(0);
                 $this->attributes = func_get_arg(1);

@@ -11,11 +11,37 @@ $password = getenv('FR_SECRET_KEY', true) ?: getenv('FR_SECRET_KEY');
 // create our client object
 $client = new FlowrouteNumbersAndMessagingLib\FlowrouteNumbersAndMessagingClient($username, $password);
 
+// ---------------- Numbers --------------------
+
 // List all our numbers
 $our_numbers = GetNumbers($client);
 
+// Find details for a specific number
+$number_details = GetNumberDetails($client, $our_numbers[0]->attributes->value);
+
+// Find purchasable numbers
+$available_numbers = GetAvailableNumbers($client);
+
+// List Available Area Codes
+//$available_areacodes = GetAvailableAreaCodes($client);
+
+// List available Exchange Codes
+//$available_exchange_codes = GetAvailableExchangeCodes($client);
+
+// Purchase a DID
+$client->getNumbers()->createPurchaseAPhoneNumber($available_numbers[0][0]->id);
+
+// Release a purchased DID
+$client->getNumbers()->releaseDid($available_numbers[0][0]->id);
+
+// ---------------- Messaging --------------------
+$test_number = "14254664078";
+
 // List all our SMS Messages
 $our_messages = GetMessages($client);
+
+// Set Account Level SMS Callback URL
+SetSMSCallback($client, "http://www.example.com");
 
 // Send an SMS Message from our account
 SendSMS($client, $our_numbers[0]);
@@ -26,17 +52,22 @@ SendMMS($client, $our_numbers[0]);
 // Look up a specific MDR
 GetMDRDetail($client, $our_messages[0]);
 
-// Find details for a specific number
-$number_details = GetNumberDetails($client, $our_numbers[0]->attributes->value);
+// Set Account Level MMS Callback
+SetMMSCallback($client, "http://www.example.com");
 
-// Find purchasable numbers
-$available_numbers = GetAvailableNumbers($client);
+// Set Account Level DLR Callback
+SetDLRCallback($client, "http://www.example.com");
 
-// List Available Area Codes
-$available_areacodes = GetAvailableAreaCodes($client);
+// Set a Callback for a Specific DID
+SetDIDCallback($client, $our_numbers[0]->id, "http://www.example.com/test");
 
-// List available Exchange Codes
-$available_exchange_codes = GetAvailableExchangeCodes($client);
+// Send an SMS Message with a Callback
+SendSMS($client, $our_numbers[0], "http://www.example.com");
+
+// ---------------- Routes --------------------
+
+// List available PoPs
+$pops = GetAvailablePops($client);
 
 // List Inbound Routes
 $inbound_routes = GetInboundRoutes($client);
@@ -67,8 +98,14 @@ for ($i = 1; $i < count($inbound_routes); $i++ )
 }
 UpdateFailoverRoute($client, $our_numbers[1]->id, $route_id);
 
+// ---------------- Portability --------------------
+
+// Check number portability
+CheckPortability($client);
+
 echo "\n\nAll Tests Completed\n";
 
+// ---------------------- Helper Functions -------------------------------
 function CreateInboundRoute($client)
 {
     $routes = $client->getRoutes();
@@ -78,6 +115,7 @@ function CreateInboundRoute($client)
     $body->data->attributes->alias = "Test Route";
     $body->data->attributes->routeType = Models\RouteTypeEnum::HOST;
     $body->data->attributes->value = "www.flowroute.com";
+    $boyd->data->attributes->edge_strategy_id = 2;
 
     $result = $routes->CreateAnInboundRoute($body);
     var_dump($result);
@@ -99,7 +137,7 @@ function GetInboundRoutes($client)
 {
     $return_list = array();
 
-    $limit = 3;
+    $limit = 10;
     $offset = 0;
 
     $routes = $client->getRoutes();
@@ -178,7 +216,7 @@ function GetAvailableAreaCodes($client)
 {
     $return_list = array();
 
-    $limit = 2;
+    $limit = 10;
     $offset = 0;
     $maxSetupCost = 10.00;
 
@@ -223,7 +261,7 @@ function GetAvailableNumbers($client)
     $rateCenter = NULL;
     $state = NULL;
 
-    $limit = 2;
+    $limit = 10;
     $offset = 0;
 
     $return_list = array();
@@ -267,35 +305,96 @@ function GetMDRDetail($client, $id)
     var_dump($mdr_data);
 }
  
-function SendSMS($client, $from_did)
+function SendSMS($client, $from_did, $callback_url=NULL)
 {
+    global $test_number;
+
     $msg = new Models\Message();
     var_dump($from_did);
     $msg->from = $from_did->id;
-    $msg->to = "YOUR_MOBILE_NUMBER"; // Replace with your mobile number to receive messages from your Flowroute account
+    $msg->to = $test_number; // Replace with your mobile number to receive messages from your Flowroute account
     $msg->body = "This is a Test Message";
+    if($callback_url != NULL)
+    {
+        $msg->callback_url = $callback_url;
+    }
+    $messages = $client->getMessages();
+    $result = $messages->CreateSendAMessage($msg);
+    var_dump($result);
 }
 
 function SendMMS($client, $from_did)
 {
-    $msg = new Models\MMS_Message();
+    global $test_number;
+
+    $msg = new Models\Message();
     $msg->from = $from_did->id;
     // TODO: Replace the number below
-    $msg->to = "YOUR_MOBILE_NUMBER";
-    $msg->body = "This is a Test Message";
+    $msg->to = $test_number;
+    $msg->body = "This is a Test MMS Message";
+    $msg->is_mms = True;
     $msg->mediaUrls[] = 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png';
 
     $messages = $client->getMessages();
     $result = $messages->CreateSendAMessage($msg);
+    var_dump($result);
+}
+
+function SetSMSCallback($client, $url)
+{
+    $body = new Models\MessageCallback();
+    $body->callback_url = $url;
+
+    $messages = $client->getMessages();
+    $result = $messages->setAccountSMSCallback($body);
+
+    return($result);
+}
+
+function SetMMSCallback($client, $url)
+{
+    $body = new Models\MessageCallback();
+    $body->callback_url = $url;
+
+    $messages = $client->getMessages();
+    $result = $messages->setAccountMMSCallback($body);
+
+    return($result);
+}
+
+function SetDLRCallback($client, $url)
+{
+    $body = new Models\MessageCallback();
+    $body->callback_url = $url;
+
+    $messages = $client->getMessages();
+    $result = $messages->setAccountDLRCallback($body);
+
+    return($result);
+}
+
+function SetDIDCallback($client, $did, $url)
+{
+    $body = array(
+        "data" => array(
+        )
+    );
+
+    $body['data'] = array("attributes" => array("callback_url" => $url));
+
+    $messages = $client->getMessages();
+    $result = $messages->setDIDSMSCallback($did, $body);
+
+    return($result);
 }
 
 function GetMessages($client)
 {
     $return_list = array();
-    $limit = 1;
+    $limit = 10;
     $offset = 0;
 
-    // Find all messages since January 1, 2017
+    // Find all messages since January 1, 2018
     $startDate = new DateTime('2018-01-01', new DateTimeZone('Pacific/Nauru'));
 
     $endDate = NULL;
@@ -303,6 +402,11 @@ function GetMessages($client)
     do
     {
         $messages = $client->getMessages();
+        echo "calling lookup on ";
+        var_dump($startDate);
+        var_dump($endDate);
+        var_dump($limit);
+        var_dump($offset);
         $message_data = $messages->getLookUpASetOfMessages($startDate, $endDate, $limit, $offset);
 
         // Iterate through each number item
@@ -367,9 +471,32 @@ function GetNumberDetails($client, $id)
 {
     // User the Numbers Controller from our Client
     $numbers = $client->getNumbers();
-    echo "Calling gnd with " . $id;
     $result = $numbers->getPhoneNumberDetails($id);
     var_dump($result);
+    return $result;
+}
+
+function GetAvailablePops($client)
+{
+    $routes = $client->getRoutes();
+    $result = $routes->listPops();
+    echo "Available Edge Pops";
+    echo "--------------------------------------\n";
+    var_dump($result);
+    echo "\n--------------------------------------\n";
+    return $result;
+}
+
+function CheckPortability($client)
+{
+    $portability = $client->getPorting();
+    echo "\nChecking Portability\n";
+    echo "--------------------------------------\n";
+    $porting_numbers = new Models\Portability(array('+14254445555', '+14254446666'));
+
+    $result = $portability->checkPortability($porting_numbers->jsonSerialize());
+    var_dump($result);
+    echo "\n--------------------------------------\n";
     return $result;
 }
 
