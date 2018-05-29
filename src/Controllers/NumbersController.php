@@ -209,7 +209,7 @@ class NumbersController extends BaseController
         $_queryBuilder = Configuration::$BASEURI;
         
         //prepare query string for API call
-        $_queryBuilder = $_queryBuilder.'/v2/numbers/{id}';
+        $_queryBuilder = $_queryBuilder.'/v2/numbers/' . $id;
 
         //process optional query parameters
         $_queryBuilder = APIHelper::appendUrlWithTemplateParameters($_queryBuilder, array (
@@ -236,6 +236,77 @@ class NumbersController extends BaseController
 
         //and invoke the API call request to fetch the response
         $response = Request::post($_queryUrl, $_headers);
+
+        $_httpResponse = new HttpResponse($response->code, $response->headers, $response->raw_body);
+        $_httpContext = new HttpContext($_httpRequest, $_httpResponse);
+
+        //call on-after Http callback
+        if ($this->getHttpCallBack() != NULL) {
+            $this->getHttpCallBack()->callOnAfterRequest($_httpContext);
+        }
+
+        //Error handling using HTTP status codes
+        if ($response->code == 401) {
+            throw new Exceptions\ErrorException(
+                'Unauthorized – There was an issue with your API credentials.',
+                $_httpContext
+            );
+        }
+
+        if ($response->code == 404) {
+            throw new Exceptions\ErrorException('The specified resource was not found', $_httpContext);
+        }
+
+        //handle errors defined at the API level
+        $this->validateResponse($_httpResponse, $_httpContext);
+
+        $mapper = $this->getJsonMapper();
+
+        return $mapper->mapClass($response->body, 'FlowrouteNumbersAndMessagingLib\\Models\\Number26');
+    }
+
+    /**
+     * Lets you remove a purchased phone number from your inventory.
+     *
+     * @param integer $id Phone number to purchase. Must be in 11-digit E.164 format; e.g. 12061231234.
+     * @return mixed response from the API call
+     * @throws APIException Thrown if API call fails
+     */
+    public function releaseDid(
+        $id
+    ) {
+
+        //the base uri for api requests
+        $_queryBuilder = Configuration::$BASEURI;
+
+        //prepare query string for API call
+        $_queryBuilder = $_queryBuilder.'/v2/numbers/' . $id;
+
+        //process optional query parameters
+        $_queryBuilder = APIHelper::appendUrlWithTemplateParameters($_queryBuilder, array (
+            'id' => $id,
+            ));
+
+        //validate and preprocess url
+        $_queryUrl = APIHelper::cleanUrl($_queryBuilder);
+
+        //prepare headers
+        $_headers = array (
+            'user-agent'    => 'Flowroute SDK v3.0',
+            'Accept'        => 'application/json'
+        );
+
+        //set HTTP basic auth parameters
+        Request::auth(Configuration::$basicAuthUserName, Configuration::$basicAuthPassword);
+
+        //call on-before Http callback
+        $_httpRequest = new HttpRequest(HttpMethod::DELETE, $_headers, $_queryUrl);
+        if ($this->getHttpCallBack() != NULL) {
+            $this->getHttpCallBack()->callOnBeforeRequest($_httpRequest);
+        }
+
+        //and invoke the API call request to fetch the response
+        $response = Request::delete($_queryUrl, $_headers);
 
         $_httpResponse = new HttpResponse($response->code, $response->headers, $response->raw_body);
         $_httpContext = new HttpContext($_httpRequest, $_httpResponse);

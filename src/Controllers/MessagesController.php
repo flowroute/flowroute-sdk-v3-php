@@ -204,17 +204,21 @@ class MessagesController extends BaseController
         return $response->body;
     }
 
-    public function setDIDSMSCallback(
-        $did,
+    /**
+     * Sets the account level callback for MMS messages.
+     *
+     * @param url to set for MMS callbacks
+     * @return string response from the API call
+     * @throws APIException Thrown if API call fails
+     */
+    public function setAccountMMSCallback(
         $body
     ) {
         //the base uri for api requests
         $_queryBuilder = Configuration::$BASEURI;
 
         //prepare query string for API call
-        $_queryBuilder = $_queryBuilder.'/v2.0/numbers/';
-        $_queryBuilder .= $did;
-        $_queryBuilder .= '/relationships/sms_callback'
+        $_queryBuilder = $_queryBuilder.'/v2.1/messages/mms_callback';
 
         //validate and preprocess url
         $_queryUrl = APIHelper::cleanUrl($_queryBuilder);
@@ -274,6 +278,155 @@ class MessagesController extends BaseController
         //handle errors defined at the API level
         $this->validateResponse($_httpResponse, $_httpContext);
 
+        return $response->body;
+    }
+
+    /**
+     * Sets the account level callback for DLRs.
+     *
+     * @param url to set for DLR callbacks
+     * @return string response from the API call
+     * @throws APIException Thrown if API call fails
+     */
+    public function setAccountDLRCallback(
+        $body
+    ) {
+        //the base uri for api requests
+        $_queryBuilder = Configuration::$BASEURI;
+
+        //prepare query string for API call
+        $_queryBuilder = $_queryBuilder.'/v2.1/messages/dlr_callback';
+
+        //validate and preprocess url
+        $_queryUrl = APIHelper::cleanUrl($_queryBuilder);
+
+        //prepare headers
+        $_headers = array (
+            'user-agent'    => 'Flowroute SDK v3.0',
+            'content-type'  => 'application/vnd.api+json'
+        );
+
+        //set HTTP basic auth parameters
+        Request::auth(Configuration::$basicAuthUserName, Configuration::$basicAuthPassword);
+
+        //call on-before Http callback
+        $_httpRequest = new HttpRequest(HttpMethod::PUT, $_headers, $_queryUrl);
+        if ($this->getHttpCallBack() != NULL) {
+            $this->getHttpCallBack()->callOnBeforeRequest($_httpRequest);
+        }
+
+        //and invoke the API call request to fetch the response
+        $response = Request::put($_queryUrl, $_headers, Request\Body::Json($body));
+
+        $_httpResponse = new HttpResponse($response->code, $response->headers, $response->raw_body);
+        $_httpContext = new HttpContext($_httpRequest, $_httpResponse);
+
+        //call on-after Http callback
+        if ($this->getHttpCallBack() != NULL) {
+            $this->getHttpCallBack()->callOnAfterRequest($_httpContext);
+        }
+
+        //Error handling using HTTP status codes
+        if ($response->code == 401) {
+            throw new Exceptions\ErrorException(
+                'Unauthorized – There was an issue with your API credentials.',
+                $_httpContext
+            );
+        }
+
+        if ($response->code == 403) {
+            throw new Exceptions\ErrorException(
+                'Forbidden – You don\'t have permission to access this resource.',
+                $_httpContext
+            );
+        }
+
+        if ($response->code == 404) {
+            throw new Exceptions\ErrorException('The specified resource was not found', $_httpContext);
+        }
+
+        if ($response->code == 422) {
+            throw new Exceptions\ErrorException(
+                'Unprocessable Entity - You tried to enter an incorrect value.',
+                $_httpContext
+            );
+        }
+
+        //handle errors defined at the API level
+        $this->validateResponse($_httpResponse, $_httpContext);
+
+        return $response->body;
+    }
+
+
+    public function setDIDSMSCallback(
+        $did,
+        $body
+    ) {
+        //the base uri for api requests
+        $_queryBuilder = Configuration::$BASEURI;
+
+        //prepare query string for API call
+        $_queryBuilder = $_queryBuilder.'/v2/numbers/';
+        $_queryBuilder .= $did;
+        $_queryBuilder .= '/relationships/dlr_callback';
+
+        //validate and preprocess url
+        $_queryUrl = APIHelper::cleanUrl($_queryBuilder);
+
+        //prepare headers
+        $_headers = array (
+            'user-agent'    => 'Flowroute SDK v3.0',
+            'content-type'  => 'application/vnd.api+json'
+        );
+
+        //set HTTP basic auth parameters
+        Request::auth(Configuration::$basicAuthUserName, Configuration::$basicAuthPassword);
+
+        //call on-before Http callback
+        $_httpRequest = new HttpRequest(HttpMethod::POST, $_headers, $_queryUrl);
+        if ($this->getHttpCallBack() != NULL) {
+            $this->getHttpCallBack()->callOnBeforeRequest($_httpRequest);
+        }
+
+        //and invoke the API call request to fetch the response
+        $response = Request::post($_queryUrl, $_headers, Request\Body::Json($body));
+
+        $_httpResponse = new HttpResponse($response->code, $response->headers, $response->raw_body);
+        $_httpContext = new HttpContext($_httpRequest, $_httpResponse);
+        //call on-after Http callback
+        if ($this->getHttpCallBack() != NULL) {
+            $this->getHttpCallBack()->callOnAfterRequest($_httpContext);
+        }
+
+        //Error handling using HTTP status codes
+        if ($response->code == 401) {
+            throw new Exceptions\ErrorException(
+                'Unauthorized – There was an issue with your API credentials.',
+                $_httpContext
+            );
+        }
+
+        if ($response->code == 403) {
+            throw new Exceptions\ErrorException(
+                'Forbidden – You don\'t have permission to access this resource.',
+                $_httpContext
+            );
+        }
+
+        if ($response->code == 404) {
+            throw new Exceptions\ErrorException('The specified resource was not found', $_httpContext);
+        }
+
+        if ($response->code == 422) {
+            throw new Exceptions\ErrorException(
+                'Unprocessable Entity - You tried to enter an incorrect value.',
+                $_httpContext
+            );
+        }
+
+        //handle errors defined at the API level
+        $this->validateResponse($_httpResponse, $_httpContext);
         return $response->body;
     }
 

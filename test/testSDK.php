@@ -15,7 +15,6 @@ $client = new FlowrouteNumbersAndMessagingLib\FlowrouteNumbersAndMessagingClient
 
 // List all our numbers
 $our_numbers = GetNumbers($client);
-exit();
 
 // Find details for a specific number
 $number_details = GetNumberDetails($client, $our_numbers[0]->attributes->value);
@@ -24,20 +23,25 @@ $number_details = GetNumberDetails($client, $our_numbers[0]->attributes->value);
 $available_numbers = GetAvailableNumbers($client);
 
 // List Available Area Codes
-$available_areacodes = GetAvailableAreaCodes($client);
+//$available_areacodes = GetAvailableAreaCodes($client);
 
 // List available Exchange Codes
-$available_exchange_codes = GetAvailableExchangeCodes($client);
+//$available_exchange_codes = GetAvailableExchangeCodes($client);
 
 // Purchase a DID
+$client->getNumbers()->createPurchaseAPhoneNumber($available_numbers[0][0]->id);
+
+// Release a purchased DID
+$client->getNumbers()->releaseDid($available_numbers[0][0]->id);
 
 // ---------------- Messaging --------------------
+$test_number = "14254664078";
 
 // List all our SMS Messages
 $our_messages = GetMessages($client);
 
-// Set our global SMS Callback URL
-$result = SetSMSCallback($client, "http://www.example.com");
+// Set Account Level SMS Callback URL
+SetSMSCallback($client, "http://www.example.com");
 
 // Send an SMS Message from our account
 SendSMS($client, $our_numbers[0]);
@@ -47,6 +51,18 @@ SendMMS($client, $our_numbers[0]);
 
 // Look up a specific MDR
 GetMDRDetail($client, $our_messages[0]);
+
+// Set Account Level MMS Callback
+SetMMSCallback($client, "http://www.example.com");
+
+// Set Account Level DLR Callback
+SetDLRCallback($client, "http://www.example.com");
+
+// Set a Callback for a Specific DID
+SetDIDCallback($client, $our_numbers[0]->id, "http://www.example.com/test");
+
+// Send an SMS Message with a Callback
+SendSMS($client, $our_numbers[0], "http://www.example.com");
 
 // ---------------- Routes --------------------
 
@@ -289,26 +305,39 @@ function GetMDRDetail($client, $id)
     var_dump($mdr_data);
 }
  
-function SendSMS($client, $from_did)
+function SendSMS($client, $from_did, $callback_url=NULL)
 {
+    global $test_number;
+
     $msg = new Models\Message();
     var_dump($from_did);
     $msg->from = $from_did->id;
-    $msg->to = "YOUR NUMBER HERE"; // Replace with your mobile number to receive messages from your Flowroute account
+    $msg->to = $test_number; // Replace with your mobile number to receive messages from your Flowroute account
     $msg->body = "This is a Test Message";
+    if($callback_url != NULL)
+    {
+        $msg->callback_url = $callback_url;
+    }
+    $messages = $client->getMessages();
+    $result = $messages->CreateSendAMessage($msg);
+    var_dump($result);
 }
 
 function SendMMS($client, $from_did)
 {
+    global $test_number;
+
     $msg = new Models\Message();
     $msg->from = $from_did->id;
     // TODO: Replace the number below
-    $msg->to = "YOUR NUMBER HERE";
-    $msg->body = "This is a Test Message";
+    $msg->to = $test_number;
+    $msg->body = "This is a Test MMS Message";
+    $msg->is_mms = True;
     $msg->mediaUrls[] = 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png';
 
     $messages = $client->getMessages();
     $result = $messages->CreateSendAMessage($msg);
+    var_dump($result);
 }
 
 function SetSMSCallback($client, $url)
@@ -322,10 +351,36 @@ function SetSMSCallback($client, $url)
     return($result);
 }
 
-function SetDIDCallback($client, $did, $url)
+function SetMMSCallback($client, $url)
 {
     $body = new Models\MessageCallback();
     $body->callback_url = $url;
+
+    $messages = $client->getMessages();
+    $result = $messages->setAccountMMSCallback($body);
+
+    return($result);
+}
+
+function SetDLRCallback($client, $url)
+{
+    $body = new Models\MessageCallback();
+    $body->callback_url = $url;
+
+    $messages = $client->getMessages();
+    $result = $messages->setAccountDLRCallback($body);
+
+    return($result);
+}
+
+function SetDIDCallback($client, $did, $url)
+{
+    $body = array(
+        "data" => array(
+        )
+    );
+
+    $body['data'] = array("attributes" => array("callback_url" => $url));
 
     $messages = $client->getMessages();
     $result = $messages->setDIDSMSCallback($did, $body);
@@ -416,7 +471,6 @@ function GetNumberDetails($client, $id)
 {
     // User the Numbers Controller from our Client
     $numbers = $client->getNumbers();
-    echo "Calling gnd with " . $id;
     $result = $numbers->getPhoneNumberDetails($id);
     var_dump($result);
     return $result;

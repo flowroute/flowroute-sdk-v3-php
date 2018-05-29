@@ -52,6 +52,12 @@ echo "List CNAM Details " . $our_cnams[0]->id . "\n";
 $result = $client->getCNAMS()->getCNAMdetails($our_cnams[0]->id);
 var_dump($result);
 
+// Search CNAMS by Criteria
+echo "Search for CNAM Records.\n";
+$startsWith = "Flowroute";
+$search_results = GetCNAMs($client, True, $startsWith);
+var_dump($search_results);
+
 // Associate a CNAM Record with a DID
 echo "Associate a CNAM record with one of our DIDs.";
 $did = $ourDIDs[0]->id;
@@ -86,16 +92,9 @@ function wait_for_user($prompt)
     fclose($handle);
 }
 
-function GetCNAMs($client, $approved)
+function GetCNAMs($client, $is_approved=False, $startsWith=NULL,
+                  $endsWith=NULL, $contains=NULL, $limit=10, $offset=0)
 {
-    $startsWith = NULL;
-    $contains = NULL;
-    $endsWith = NULL;
-    $is_approved = $approved;
-
-    $limit = 10;
-    $offset = 0;
-
     $return_list = array();
     // User the CNAM Controller from our Client
     $cnams = $client->getCNAMS();
