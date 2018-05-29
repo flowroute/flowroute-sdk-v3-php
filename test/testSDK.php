@@ -35,7 +35,7 @@ $client->getNumbers()->createPurchaseAPhoneNumber($available_numbers[0][0]->id);
 $client->getNumbers()->releaseDid($available_numbers[0][0]->id);
 
 // ---------------- Messaging --------------------
-$test_number = "14254664078";
+$test_number = "YOUR MOBILE NUMBER HERE";
 
 // List all our SMS Messages
 $our_messages = GetMessages($client);
