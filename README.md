@@ -695,7 +695,7 @@ The Flowroute PHP Library v3 allows you to make HTTP requests to the <span class
 
 #### SendSMS($client, $from_did)
 
-The function declares a message object in JSON format as a parameter which you can learn more about in the API References for [MMS](https://developer.flowroute.com/api/messages/v2.1/send-an-mms/) and [SMS](https://developer.flowroute.com/api/messages/v2.1/send-an-sms/). In the following example, we are sending an SMS with a from the previously declared <span class="code-variable">from_did</span> to your mobile number.
+The function declares a message object in JSON format as a parameter which you can learn more about in the API References for [MMS](https://developer.flowroute.com/api/messages/v2.1/send-an-mms/) and [SMS](https://developer.flowroute.com/api/messages/v2.1/send-an-sms/). In the following example, we are sending an SMS from the previously declared <span class="code-variable">from_did</span> to your mobile number.
 
 ##### Function Declaration
 
