@@ -62,7 +62,7 @@ SetDLRCallback($client, "http://www.example.com");
 SetDIDCallback($client, $our_numbers[0]->id, "http://www.example.com/test");
 
 // Send an SMS Message with a Callback
-SendSMS($client, $our_numbers[0], "http://www.example.com");
+SendSMS($client, $our_numbers[0], "http://www.example.com/sms");
 
 // ---------------- Routes --------------------
 
@@ -316,7 +316,7 @@ function SendSMS($client, $from_did, $callback_url=NULL)
     $msg->body = "This is a Test Message";
     if($callback_url != NULL)
     {
-        $msg->callback_url = $callback_url;
+        $msg->dlr_callback = $callback_url;
     }
     $messages = $client->getMessages();
     $result = $messages->CreateSendAMessage($msg);
@@ -327,7 +327,7 @@ function SendMMS($client, $from_did)
 {
     global $test_number;
 
-    $msg = new Models\Message();
+    $msg = new Models\MMS_Message();
     $msg->from = $from_did->id;
     // TODO: Replace the number below
     $msg->to = $test_number;

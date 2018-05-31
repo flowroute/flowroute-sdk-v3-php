@@ -497,6 +497,8 @@ class MessagesController extends BaseController
         }
 
         if ($response->code == 422) {
+            var_dump($body);
+            var_dump($response);
             throw new Exceptions\ErrorException(
                 'Unprocessable Entity - You tried to enter an incorrect value.',
                 $_httpContext
