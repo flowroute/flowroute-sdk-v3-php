@@ -21,7 +21,7 @@ echo "--List detail information for an E911 Record\n";
 $detail_id = $e911_list[0]->id;
 $detail_record = $client->getE911s()->get_e911_details($detail_id);
 var_dump($detail_record);
-
+/*
 // Validate an E911 Address
 echo "--Validate an E911 Address\n";
 
@@ -73,7 +73,7 @@ var_dump($result);
 echo "Delete an E911 Address\n";
 $result = $client->getE911s()->delete_address($detail_id);
 var_dump($result);
-
+ */
 
 
 // Helper Functions ------------------------------------------------------------
