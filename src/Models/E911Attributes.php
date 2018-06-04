@@ -13,12 +13,38 @@ use FlowrouteNumbersAndMessagingLib\Utils\DateTimeHelper;
 /**
  * @todo Write general description for this model
  */
-class Attributes implements JsonSerializable
+class E911Attributes implements JsonSerializable
 {
     /**
      * @todo Write general description for this property
      * @maps address_type
      * @var string|null $address_type public property
+
+        'Apartment' : 'A',
+        'Basement'  : 'BM',
+        'Building'  : 'B',
+        'Department': 'D',
+        'Floor'     : 'F',
+        'Front'     : 'FR',
+        'Hanger'    : 'H',
+        'Key'       : 'K',
+        'Lobby'     : 'L',
+        'Lot'       : 'LT',
+        'Lower'     : 'LO',
+        'Office'    : 'O',
+        'Penthouse' : 'P',
+        'Pier'      : 'PI',
+        'Rear'      : 'RE',
+        'Room'      : 'R',
+        'Side'      : 'S',
+        'Slip'      : 'SL',
+        'Space'     : 'SC',
+        'Stop'      : 'SP',
+        'Suite'     : 'SU',
+        'Trailer'   : 'T',
+        'Unit'      : 'U',
+        'Upper'     : 'UP'
+
      */
     public $address_type;
 
@@ -26,6 +52,8 @@ class Attributes implements JsonSerializable
      * @todo Write general description for this property
      * @maps $address_type_number
      * @var string|null $address_type_number public property
+     *  Only required if address_type is set.  For example, if address type is 'SU' for suite, the
+     *  address type number would be the suite number.
      */
     public $address_type_number;
 
@@ -38,7 +66,7 @@ class Attributes implements JsonSerializable
     /**
      * @todo Write general description for this property
      * @maps country
-     * @var 2 character country code
+     * @var 2 character country code US or CA
      */
     public $country;
 
@@ -101,8 +129,12 @@ class Attributes implements JsonSerializable
     public function jsonSerialize()
     {
         $json = array();
-        $json['address_type']        = $this->address_type;
-        $json['address_type_number'] = $this->address_type_number;
+        if($this->address_type != null) {
+            $json['address_type']        = $this->address_type;
+        }
+        if($this->address_type_number != null) {
+            $json['address_type_number'] = $this->address_type_number;
+        }
         $json['city']                = $this->city;
         $json['country']             = $this->country;
         $json['first_name']          = $this->first_name;
@@ -110,7 +142,8 @@ class Attributes implements JsonSerializable
         $json['label']               = $this->label;
         $json['street_name']         = $this->street_name;
         $json['street_number']       = $this->street_number;
-        $json['zipcode']             = $this->zipcode;
+        $json['state']               = $this->state;
+        $json['zip']                 = $this->zipcode;
 
         return $json;
     }
