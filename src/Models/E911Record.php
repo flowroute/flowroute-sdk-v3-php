@@ -18,7 +18,7 @@ class E911Record implements JsonSerializable
      * @todo Write general description for this property
      * @var \FlowrouteNumbersAndMessagingLib\Models\E911Attributes|null $attributes public property
      */
-    public $attributes = Models\E911Attributes;
+    public $attributes;
 
     /**
      * @todo Write general description for this property
@@ -40,6 +40,7 @@ class E911Record implements JsonSerializable
         switch (func_num_args()) {
             default:
                 $this->type = 'e911';
+                $this->attributes = new E911Attributes();
                 break;
         }
     }
@@ -51,9 +52,10 @@ class E911Record implements JsonSerializable
     public function jsonSerialize()
     {
         $json = array();
-        $json['attributes'] = $this->attributes;
-        $json['id']         = $this->id;
-        $json['type']       = $this->type;
+        $json['data'] = array();
+        $json['data']['attributes'] = $this->attributes->jsonSerialize();
+        $json['data']['id']         = $this->id;
+        $json['data']['type']       = $this->type;
 
         return $json;
     }
