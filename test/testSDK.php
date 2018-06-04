@@ -29,13 +29,13 @@ $available_areacodes = GetAvailableAreaCodes($client);
 $available_exchange_codes = GetAvailableExchangeCodes($client);
 
 // Purchase a DID
-//$client->getNumbers()->createPurchaseAPhoneNumber($available_numbers[0][0]->id);
+$client->getNumbers()->createPurchaseAPhoneNumber($available_numbers[0][0]->id);
 
 // Set an alias for a DID
 $client->getNumbers()->setDidAlias($our_numbers[0]->id, "Flowroute");
 
 // Release a purchased DID
-//$client->getNumbers()->releaseDid($available_numbers[0][0]->id);
+$client->getNumbers()->releaseDid($available_numbers[0][0]->id);
 
 // ---------------- Messaging --------------------
 $test_number = "YOUR MOBILE NUMBER HERE";
@@ -66,7 +66,6 @@ SetDIDCallback($client, $our_numbers[0]->id, "http://www.example.com/test");
 
 // Send an SMS Message with a Callback
 SendSMS($client, $our_numbers[0], "http://www.example.com/sms");
-
 // ---------------- Routes --------------------
 
 // List available PoPs
