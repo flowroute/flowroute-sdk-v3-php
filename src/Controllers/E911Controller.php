@@ -74,6 +74,8 @@ class E911Controller extends BaseController
         //validate and preprocess url
         $_queryUrl = APIHelper::cleanUrl($_queryBuilder);
 
+        echo "Query URL: " . $_queryUrl . "\n";
+
         //prepare headers
         $_headers = array (
             'user-agent'    => 'Flowroute SDK v3.0'

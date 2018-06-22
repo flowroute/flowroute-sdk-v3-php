@@ -12,9 +12,9 @@ $password = getenv('FR_SECRET_KEY', true) ?: getenv('FR_SECRET_KEY');
 $client = new FlowrouteNumbersAndMessagingLib\FlowrouteNumbersAndMessagingClient($username, $password);
 
 // List all our E911 Records
-$e911_list = listE911s($client);
 echo "--List all E911 Records\n";
-var_dump($e911_list);
+$e911_list = listE911s($client);
+exit(0);
 
 // List E911 Record Details
 echo "--List detail information for an E911 Record\n";
@@ -48,6 +48,8 @@ $detail_id = $result->body->data->id;
 // Update an E911 Address
 echo "Update an E911 Address\n";
 $body->attributes->label = 'Work';
+$body->attributes->address_type = 'b';
+$body->attributes->address_type_number = '3901';
 $result = $client->getE911s()->update_address($body, $detail_id);
 var_dump($result);
 
@@ -91,13 +93,20 @@ function listE911s($client)
     {
         $e911_data = $controller->listE911s($limit, $offset, $state);
         // Iterate through each number item
+        $round = 0;
         foreach ($e911_data as $entry)
         {
-            foreach ($entry as $item) {
-                echo "---------------------------\nE911 Records:\n";
-                var_dump($item);
-                $return_list[] = $item;
+            if ($round == 0)
+            {
+                echo "---------------------------------------------------------------\nE911 Record:\n";
+            } else {
+                echo "\nLinks:\n";
             }
+            $round++;
+            ob_start();
+            var_dump($entry);
+            $output = ob_get_clean();
+            echo preg_replace("/=>(\s+)/m", ' => ', $output);
         }
 
         // See if there is more data to process
