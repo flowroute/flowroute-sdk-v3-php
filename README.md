@@ -83,13 +83,15 @@ The Flowroute PHP Library v3 provides methods for interacting with [Numbers v2](
 
 ## Usage
 
-In Flowroute's approach to building the PHP library v3, HTTP requests are handled by an API client object accessed by functions defined in **testSDK.php** located within the **test** subdirectory. First, switch to the **test** directory and open the demo file.
+In Flowroute's approach to building the PHP library v3, HTTP requests are handled by an API client object accessed by functions defined in **testSDK.php** which interacts with the **Numbers**, **Routes**, and **Messages** API resources,  **e911_demo.php** which interacts with the **E911s** resource, and **cnam_demo.php** which interacts with the **CNAMs** resouce. All demo files are located within the **test** subdirectory. First, switch to the **test** directory and open the demo file that you need to test.
 
 ###### Change directory
 
     cd test
 
 ###### Open test file
+
+The following shows an example of a single PHP file that imports the Flowroute API client and all the required modules. The PHP Library v3 comes with three example demo files &mdash; **testSDK.php**, **e911_demo.php**, **cnam_demo.php** &mdash; files that you can edit and run for demonstration and testing purposes.
 
     vim testSDK.php
 
@@ -115,7 +117,7 @@ In **testSDK.php**, check that the required files are included at the top. Repla
 
 ## Functions
 
-The following section will demonstrate the capabilities of Numbers v2 and Messages v2.1 that are wrapped in our PHP library. Note that the example responses may not show the expected results from the function calls within **testSDK.php**. These examples have been formatted using Mac's <span class="code-variable">pbpaste</span> and <span class="code-variable">jq</span>. To learn more, see [Quickly Tidy Up JSON from the Command Line](http://onebigfunction.com/vim/2015/02/02/quickly-tidying-up-json-from-the-command-line-and-vim/).
+The following section will demonstrate the capabilities of Numbers v2, Messages v2.1, E911s v2, and CNAMs v2 that are wrapped in our PHP library. Note that the example responses may not show the expected results from the function calls within **testSDK.php**, **e911_demo.php**, and **cnam_demo.php**. These examples have been formatted using Mac's <span class="code-variable">pbpaste</span> and <span class="code-variable">jq</span>. To learn more, see [Quickly Tidy Up JSON from the Command Line](http://onebigfunction.com/vim/2015/02/02/quickly-tidying-up-json-from-the-command-line-and-vim/).
 
 ### Number Management
 
@@ -548,7 +550,7 @@ The Flowroute PHP Library v3 allows you to make HTTP requests to the <span class
 
 #### CreateInboundRoute($client)
 
-The function declares the route object in JSON format as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/create-an-inbound-route/). In the following example, we declare a test route with <span class="code-variable">route_type</span> "host".
+The function declares the route object in JSON format as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/create-an-inbound-route/). In the following example, we declare a test route with <span class="code-variable">route\_type</span> "host".
 
 ##### Function Declaration
 
@@ -588,7 +590,7 @@ On success, the HTTP status code in the response header is <span class="code-var
       }
     }
 
-#### GetInboundRoutes($client, $DID, $route_id)
+#### GetInboundRoutes($client, $DID, $route\_id)
 
 The function declares <span class="code-variable">limit</span> and <span class="code-variable">offset</span> as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-inbound-routes/).
 
