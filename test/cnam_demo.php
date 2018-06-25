@@ -19,7 +19,7 @@ $numbers = $client->getNumbers();
 $startsWith = NULL;
 $endsWith = NULL;
 $contains = NULL;
-$limit = 10;
+$limit = 3;
 $offset = 0;
 
 $ourDIDs = GetNumbers($client);
