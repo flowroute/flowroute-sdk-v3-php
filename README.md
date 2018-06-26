@@ -895,6 +895,113 @@ On success, the HTTP status code in the response header is <span class="code-var
       }
     }
 
+### E911 Address Management
+
+Flowroute PHP Library v3 allows you to make HTTP requests to the <span class="code-variable">e911s</span> resource of Flowroute API v2: <span class="code-variable">https://api.flowroute.com/v2/e911s</span>
+
+All of the E911 address management methods are encapsulated in `e911_demo.php`.
+
+| API Reference Pages |
+| ------------------- |
+| The E911 and CNAM API reference pages are currently restricted to our beta customers, which means that all API reference links below currently return a `404 Not Found`. They will be publicly available during our E911 and CNAM APIs GA launch in a few weeks. |
+
+
+#### listE911s($client)
+
+The function declares <span class="code-variable">limit</span>, <span class="code-variable">offset</span>, and <span class="code-variable">state</span> as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-account-e911-addresses/).
+
+##### Function Declaration
+function listE911s($client)
+{
+    $limit = 10;
+    $offset = 0;
+    $state = NULL;
+
+    $return_list = array();
+    // User the E911 Controller from our Client
+    $controller = $client->getE911s();
+
+    do
+    {
+        $e911_data = $controller->listE911s($limit, $offset, $state);
+        // Iterate through each number item
+        foreach ($e911_data as $entry)
+        {
+            foreach ($entry as $item) {
+                echo "---------------------------\nE911 Records:\n";
+                var_dump($item);
+                $return_list[] = $item;
+            }
+        }
+
+        // See if there is more data to process
+        $links = $e911_data->links;
+        if (isset($links->next))
+        {
+            // more data to pull
+            $offset += $limit;
+        }
+        else
+        {
+            break;   // no more data
+        }
+    } while (true);
+
+    return $return_list;
+}
+
+##### Example Response
+
+On success, the HTTP status code in the response header is <span class="code-variable">200 OK</span> and the response body contains an array of e911 objects in JSON format. Note that this demo function iterates through all the E911 records on your account filtered by the parameters that you specify. The following example response has been clipped for brevity's sake.
+
+```
+E911 Records:
+string(52) "https://api.flowroute.com/v2/e911s?limit=10&offset=0"
+---------------------------
+E911 Records:
+string(53) "https://api.flowroute.com/v2/e911s?limit=10&offset=10"
+--List all E911 Records
+array(22) {
+  [0]=>
+  object(stdClass)#7 (4) {
+    ["attributes"]=>
+    object(stdClass)#6 (11) {
+      ["address_type"]=>
+      string(5) "Suite"
+      ["address_type_number"]=>
+      string(3) "333"
+      ["city"]=>
+      string(7) "Seattle"
+      ["country"]=>
+      string(2) "US"
+      ["first_name"]=>
+      string(5) "Albus"
+      ["label"]=>
+      string(16) "Office Space III"
+      ["last_name"]=>
+      string(13) "Rasputin, Jr."
+      ["state"]=>
+      string(2) "WA"
+      ["street_name"]=>
+      string(7) "Main St"
+      ["street_number"]=>
+      string(3) "666"
+      ["zip"]=>
+      string(5) "98101"
+    }
+    ["id"]=>
+    string(5) "21845"
+    ["links"]=>
+    object(stdClass)#8 (1) {
+      ["self"]=>
+      string(40) "https://api.flowroute.com/v2/e911s/21845"
+    }
+    ["type"]=>
+    string(4) "e911"
+  }
+```
+#### GetAvailableExchangeCodes($client)
+
 ## Errors
 
 In cases of HTTP errors, the PHP library displays a pop-up window with an error message next to the line of code that caused the error. You can add more error logging if necessary.
