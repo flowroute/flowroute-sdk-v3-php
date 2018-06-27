@@ -31,11 +31,12 @@ The Flowroute PHP Library v3 provides methods for interacting with [Numbers v2](
             *   [GetMDRDetail](#getmdrdetailclient-id)
         
         *   [E911 Address Management](#e911-address-management)
-            *   [listE911s](#liste911s)
+            *   [listE911s](#liste911sclient)
             *   [get_e911_details](#get_e911_details)
             *   [validate_address](#validate_address)
             *   [create_address](#create_address)
             *   [update_address](#update_address)
+            *   [associate_did](#associate_did)
             *   [list_dids_for_address](#list_dids_for_address)
             *   [unassociate_did](#unassociate_did)
             *   [delete_address](#delete_address)
@@ -688,7 +689,7 @@ The function updates a <span class="code-variable">DID</span> with the <span cla
 
 On success, the HTTP status code in the response header is <span class="code-variable">204 No Content</span> which means that the server successfully processed the request and is not returning any content.
 
-    204: No Content
+`204 No Content`
 
 #### UpdateFailoverRoute($client, $DID, $route_id)
 
@@ -707,7 +708,7 @@ The function updates a <span class="code-variable">DID</span> with the <span cla
 
 On success, the HTTP status code in the response header is <span class="code-variable">204 No Content</span> which means that the server successfully processed the request and is not returning any content.
 
-    204: No Content
+`204 No Content`
 
 ### Messaging
 
@@ -897,7 +898,7 @@ On success, the HTTP status code in the response header is <span class="code-var
 
 ### E911 Address Management
 
-Flowroute PHP Library v3 allows you to make HTTP requests to the <span class="code-variable">e911s</span> resource of Flowroute API v2: <span class="code-variable">https://api.flowroute.com/v2/e911s</span>
+The Flowroute PHP Library v3 allows you to make HTTP requests to the <span class="code-variable">e911s</span> resource of Flowroute API v2: <span class="code-variable">https://api.flowroute.com/v2/e911s</span>
 
 All of the E911 address management methods are encapsulated in `e911_demo.php`.
 
@@ -911,6 +912,7 @@ All of the E911 address management methods are encapsulated in `e911_demo.php`.
 The function declares <span class="code-variable">limit</span>, <span class="code-variable">offset</span>, and <span class="code-variable">state</span> as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-account-e911-addresses/).
 
 ##### Function Declaration
+```
 function listE911s($client)
 {
     $limit = 10;
@@ -949,58 +951,558 @@ function listE911s($client)
 
     return $return_list;
 }
-
+```
 ##### Example Response
 
 On success, the HTTP status code in the response header is <span class="code-variable">200 OK</span> and the response body contains an array of e911 objects in JSON format. Note that this demo function iterates through all the E911 records on your account filtered by the parameters that you specify. The following example response has been clipped for brevity's sake.
 
 ```
 E911 Records:
-string(52) "https://api.flowroute.com/v2/e911s?limit=10&offset=0"
----------------------------
-E911 Records:
-string(53) "https://api.flowroute.com/v2/e911s?limit=10&offset=10"
---List all E911 Records
-array(22) {
-  [0]=>
-  object(stdClass)#7 (4) {
-    ["attributes"]=>
-    object(stdClass)#6 (11) {
-      ["address_type"]=>
-      string(5) "Suite"
-      ["address_type_number"]=>
-      string(3) "333"
-      ["city"]=>
-      string(7) "Seattle"
-      ["country"]=>
-      string(2) "US"
-      ["first_name"]=>
-      string(5) "Albus"
-      ["label"]=>
-      string(16) "Office Space III"
-      ["last_name"]=>
-      string(13) "Rasputin, Jr."
-      ["state"]=>
-      string(2) "WA"
-      ["street_name"]=>
-      string(7) "Main St"
-      ["street_number"]=>
-      string(3) "666"
-      ["zip"]=>
-      string(5) "98101"
-    }
-    ["id"]=>
-    string(5) "21845"
-    ["links"]=>
-    object(stdClass)#8 (1) {
-      ["self"]=>
-      string(40) "https://api.flowroute.com/v2/e911s/21845"
-    }
-    ["type"]=>
-    string(4) "e911"
-  }
+{'data': [{'attributes': {'address_type': 'Lobby',
+                          'address_type_number': '12',
+                          'city': 'Seattle',
+                          'country': 'USA',
+                          'first_name': 'Maria',
+                          'label': 'Example E911',
+                          'last_name': 'Bermudez',
+                          'state': 'WA',
+                          'street_name': '20th Ave SW',
+                          'street_number': '7742',
+                          'zip': '98106'},
+           'id': '20930',
+           'links': {'self': 'https://api.flowroute.com/v2/e911s/20930'},
+           'type': 'e911'},
+          {'attributes': {'address_type': 'Apartment',
+                          'address_type_number': '12',
+                          'city': 'Seattle',
+                          'country': 'US',
+                          'first_name': 'Something',
+                          'label': '5th E911',
+                          'last_name': 'Someone',
+                          'state': 'WA',
+                          'street_name': 'Main St',
+                          'street_number': '645',
+                          'zip': '98104'},
+           'id': '20707',
+           'links': {'self': 'https://api.flowroute.com/v2/e911s/20707'},
+           'type': 'e911'}],
+ 'links': {'next': 'https://api.flowroute.com/v2/e911s?limit=10&offset=10',
+           'self': 'https://api.flowroute.com/v2/e911s?limit=10&offset=0'}}
 ```
-#### GetAvailableExchangeCodes($client)
+
+#### get\_e911\_details($detail\_id)
+
+The function declares a variable, `detail_id`, as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-account-e911-addresses/). The value that gets assigned to `detail_id` is the first resulting item of the returned array from the `listE911s` function call.
+
+##### Function Declaration
+```
+// List E911 Record Details
+echo "--List detail information for an E911 Record\n";
+$detail_id = $e911_list[0]->id;
+$detail_record = $client->getE911s()->get_e911_details($detail_id);
+var_dump($detail_record);
+```
+##### Example Response
+
+On success, the HTTP status code in the response header is <span class="code-variable">200 OK</span> and the response body contains an array of e911 objects in JSON format. Note that this demo function iterates through all the E911 records on your account filtered by the parameters that you specify. The following example response has been clipped for brevity's sake.
+
+```
+--List detail information for an E911 Record
+{
+  "data": {
+    "attributes": {
+      "address_type": "Suite",
+      "address_type_number": "333",
+      "city": "Seattle",
+      "country": "US",
+      "first_name": "Albus",
+      "label": "Office Space III",
+      "last_name": "Rasputin, Jr.",
+      "state": "WA",
+      "street_name": "Main St",
+      "street_number": "666",
+      "zip": "98101"
+    },
+    "id": "21845",
+    "links": {
+      "self": "https://api.flowroute.com/v2/e911s/21845"
+    },
+    "type": "e911"
+  }
+}
+```
+
+#### validate\_address($e911_object)
+
+In the following example request, we instantiate `body` as an `E911Record` object, then initialize its different attributes with example values. The different attributes that an `E911Record` object can have include `label`, `first_name`, `last_name`, `street_name`, `street_numbe     r`, `address_type`, `address_type_number`, `city`, `state`, `country`, and `zipcode`. Learn more about the different body parameters in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-account-e911-addresses/). We then pass `body` as a parameter for the `validate_address` function.
+
+    
+##### Example Request
+```
+// Validate an E911 Address
+echo "--Validate an E911 Address\n";
+
+$body = new Models\E911Record();
+$body->attributes->street_name = 'N Vassault';
+$body->attributes->street_number = '3901';
+$body->attributes->city = 'Tacoma';
+$body->attributes->state = 'WA';
+$body->attributes->country = 'US';
+$body->attributes->zipcode = '98407';
+$body->attributes->first_name = 'Dan';
+$body->attributes->last_name = 'Smith';
+$body->attributes->label = 'Home';
+
+$result = $client->getE911s()->validate_address($body);
+var_dump($result);
+```
+
+##### Example Response
+
+On success, the HTTP status code in the response header is `204 No Content` which means that the server successfully processed the request and is not returning any content. On error, a printable representation of the detailed API response is displayed.
+
+```
+["rawBody":"FlowrouteNumbersAndMessagingLib\Http\HttpResponse":private]=>
+  string(171)
+"{
+  "errors": [
+    {
+      "detail": {
+        "data": {
+          "attributes": {
+            "zip": [
+              "ZIP code must be at least 4 and at most 7 digits long"
+            ]
+          }
+        }
+      },
+      "id": "15eb464e-d717-49e2-a6cc-e97af67c1930",
+      "status": 422
+    }
+  ]
+}
+"
+```
+#### create_address($e911_object)
+
+The method accepts an E911 object variable with its different attributes as a parameter. Learn more about the different E911 attributes in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/create-and-validate-new-e911-address/). In the following example request, we pass our `E911Record` object variable, `body`, as a parameter to the `create_address` method.
+    
+##### Example Request
+```
+echo "--Create an E911 Address\n";
+$result = $client-&gt;getE911s()-&gt;create&gt;address($body);
+var_dump($result);
+```
+
+##### Example Response
+
+On success, the HTTP status code in the response header is `201 Created` and the response body contains the newly created e911 object in JSON format. On error, a printable representation of the detailed API response is displayed.
+
+```
+--Create an E911 Address
+{
+  "data": {
+    "attributes": {
+      "address_type": "Apartment",
+      "address_type_number": "601",
+      "city": "Tacoma",
+      "country": "US",
+      "first_name": "Dan",
+      "label": "Home",
+      "last_name": "Smith",
+      "state": "WA",
+      "street_name": "N Vassault",
+      "street_number": "3901",
+      "zip": "98407"
+    },
+    "id": "21907",
+    "links": {
+      "self": "https://api.flowroute.com/v2/e911s/21907"
+    },
+    "type": "e911"
+  }
+}
+```
+#### update_address($body, $detail_id)
+
+The method accepts an E911 object variable and an E911 record ID. Learn more about the different E911 attributes that you can update in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/update-and-validate-existing-e911-address/). In the following example, we will retrieve the record ID of our newly created E911 address and assign it to a variable, `detail_id`. We then update the `label` of our selected E911 address to "Work".
+    
+##### Example Request
+```
+$detail_id = $result->body->data->id;
+
+// Update an E911 Address
+echo "Update an E911 Address\n";
+$body->attributes->label = 'Work';
+$result = $client->getE911s()->update_address($body, $detail_id);
+var_dump($result);
+```
+##### Example Response
+On success, the HTTP status code in the response header is `200 OK` and the response body contains the newly updated e911 object in JSON format. On error, a printable representation of the detailed API response is displayed.
+
+```
+{
+  "data": {
+    "attributes": {
+      "city": "Tacoma",
+      "country": "US",
+      "first_name": "Dan",
+      "label": "Work",
+      "last_name": "Smith",
+      "state": "WA",
+      "street_name": "N Vassault",
+      "street_number": "3901",
+      "zip": "98407"
+    },
+    "id": "21907",
+    "links": {
+      "self": "https://api.flowroute.com/v2/e911s/21907"
+    },
+    "type": "e911"
+  }
+}
+```
+
+#### associate_did($did_id, $detail_id)
+
+The method accepts a phone number and an E911 record ID as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/assign-valid-e911-address-to-phone-number/). In the following example, we call the [getAccountPhoneNumbers](#getnumbersclient) function covered under Number Management to extract the value of the first item in the returned JSON array into variable `did_id`, pass our previously declared `detail_id` for the E911 record ID, and then make the association between them.
+    
+##### Example Request
+```
+// Associate an E911 Address with a DID
+echo "Associate an E911 Address with a DID\n";
+$our_numbers = $client->getNumbers()->getAccountPhoneNumbers();
+$did_id = $our_numbers->data[0]->id;
+echo "Did id " . $did_id . "\n";
+$result = $client->getE911s()->associate_did($did_id, $detail_id);
+var_dump($result);
+```
+##### Example Response
+
+On success, the HTTP status code in the response header is `204 No Content` which means that the server successfully processed the request and is not returning any content.
+
+```
+Associate an E911 Address with a DID
+Did id 12062011682
+204 No Content
+```
+
+#### list_dids_for_address($detail_id)
+
+The method accepts an E911 record id as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-phone-numbers-associated-with-e911-record/). In the following example, we retrieve the list of phone numbers associated with our previously assigned `detail_id`.
+    
+##### Example Request
+```
+// List all DIDs associated with an E911 address
+echo "List all DIDs associated with an E911 Address\n";
+$result = $client->getE911s()->list_dids_for_address($detail_id);
+var_dump($result);
+```
+##### Example Response
+On success, the HTTP status code in the response header is `200 OK` and the response body contains an array of related number objects in JSON format.
+```
+List all DIDs associated with an E911 Address
+{
+  "data": [
+    {
+      "attributes": {
+        "alias": null,
+        "value": "12062011682"
+      },
+      "id": "12062011682",
+      "links": {
+        "self": "https://api.flowroute.com/v2/numbers/12062011682"
+      },
+      "type": "number"
+    }
+  ],
+  "links": {
+    "self": "https://api.flowroute.com/v2/e911s/21907/relationships/numbers?limit=10&offset=0"
+  }
+}
+```
+
+#### unassociate_did($did_id)
+
+The method accepts a phone number as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/deactivate-e911-service-for-phone-number/). In the following example, we deactivate the E911 service for our previously assigned `did_id`.
+
+##### Example Request
+```
+Un-associate an E911 Address from a DID
+echo "Un-associate an E911 Address from a DID\n";
+$result = $client->getE911s()->unassociate_did($did_id);
+var_dump($result);
+```
+##### Example Response
+On success, the HTTP status code in the response header is `204 No Content` which means that the server successfully processed the request and is not returning any content.
+
+```
+Un-associate an E911 Address from a DID
+204 No Content
+```
+#### delete_address($detail_id)
+
+The method accepts an E911 record ID as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/remove-e911-address-from-account/). Note that all phone number associations must be removed first before you are able to delete the specified `detail_id`. In the following example, we will attempt to delete the previously assigned `detail_id`.
+
+##### Example Request
+```
+// Delete an E911 Address
+echo "Delete an E911 Address\n";
+$result = $client->getE911s()->delete_address($detail_id);
+var_dump($result);
+```
+
+##### Example Response
+On success, the HTTP status code in the response header is `204 No Content` which means that the server successfully processed the request and is not returning any content.
+
+```
+Delete an E911 Address
+204 No Content
+```
+
+### CNAM Record Management
+
+The Flowroute PHP Library v3  allows you to make HTTP requests to the `cnams` resource of Flowroute API v2: `https://api.flowroute.com/v2/cnams`.
+
+All of the CNAM record management methods are encapsulated in `cnam_demo.php`.
+
+| API Reference Pages |
+| ------------------- |
+| The E911 and CNAM API reference pages are currently restricted to our beta customers, which means that all API reference links below currently return a `404 Not Found`. They will be publicly available during our E911 and CNAM APIs GA launch in a few weeks. |
+
+#### list\_cnams()
+
+The method accepts `limit`, `offset`, and `is_approved` as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-account-cnam-records/).
+    
+##### Example Request
+```python
+print("--List CNAM Records")
+limit = 10
+offset = None
+result = cnams_controller.list_cnams(limit, offset)
+pprint.pprint(result)
+```
+
+##### Example Response
+
+On success, the HTTP status code in the response header is `200 OK` and the response body contains an array of cnam objects in JSON format.
+
+```
+--List CNAM Records
+{'data': [{'attributes': {'approval_datetime': None,
+                          'creation_datetime': None,
+                          'is_approved': True,
+                          'rejection_reason': '',
+                          'value': 'TEST, MARIA'},
+           'id': '17604',
+           'links': {'self': 'https://api.flowroute.com/v2/cnams/17604'},
+           'type': 'cnam'},
+          {'attributes': {'approval_datetime': '2018-04-16 '
+                                               '16:20:32.939166+00:00',
+                          'creation_datetime': '2018-04-12 '
+                                               '19:08:39.062539+00:00',
+                          'is_approved': True,
+                          'rejection_reason': None,
+                          'value': 'REGENCE INC'},
+           'id': '22671',
+           'links': {'self': 'https://api.flowroute.com/v2/cnams/22671'},
+           'type': 'cnam'},
+          {'attributes': {'approval_datetime': '2018-04-23 '
+                                               '17:04:30.829341+00:00',
+                          'creation_datetime': '2018-04-19 '
+                                               '21:03:04.932192+00:00',
+                          'is_approved': True,
+                          'rejection_reason': None,
+                          'value': 'BROWN BAG'},
+           'id': '22790',
+           'links': {'self': 'https://api.flowroute.com/v2/cnams/22790'},
+           'type': 'cnam'},
+          {'attributes': {'approval_datetime': '2018-05-23 '
+                                               '18:58:46.052602+00:00',
+                          'creation_datetime': '2018-05-22 '
+                                               '23:38:27.794911+00:00',
+                          'is_approved': True,
+                          'rejection_reason': None,
+                          'value': 'LEATHER REBEL'},
+           'id': '23221',
+           'links': {'self': 'https://api.flowroute.com/v2/cnams/23221'},
+           'type': 'cnam'},
+          {'attributes': {'approval_datetime': '2018-05-23 '
+                                               '18:58:46.052602+00:00',
+                          'creation_datetime': '2018-05-22 '
+                                               '23:39:24.447054+00:00',
+                          'is_approved': True,
+                          'rejection_reason': None,
+                          'value': 'LEATHER REBELZ'},
+           'id': '23223',
+           'links': {'self': 'https://api.flowroute.com/v2/cnams/23223'},
+           'type': 'cnam'},
+          {'attributes': {'approval_datetime': '2018-05-23 '
+                                               '18:58:46.052602+00:00',
+                          'creation_datetime': '2018-05-22 '
+                                               '23:42:00.786818+00:00',
+                          'is_approved': True,
+                          'rejection_reason': None,
+                          'value': 'MORBO'},
+           'id': '23224',
+           'links': {'self': 'https://api.flowroute.com/v2/cnams/23224'},
+           'type': 'cnam'}],
+ 'links': {'self': 'https://api.flowroute.com/v2/cnams?limit=10&offset=0'}}
+```
+#### get_cnam(cnam_id)
+
+The method accepts a CNAM record ID as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-cnam-record-details/). In the following example, we query for approved CNAM records on your account and then extract the ID of the first record returned and retrieve the details of that specific CNAM record. 
+    
+##### Example Request
+```
+print("\n--List Approved CNAM Records")
+result = cnams_controller.list_cnams(is_approved=True)
+pprint.pprint(result)
+if len(result['data']):
+    cnam_id = result['data'][0]['id']
+
+    print("\n--List CNAM Detail")
+    result = cnams_controller.get_cnam(cnam_id)
+    pprint.pprint(result)
+```
+##### Example Response
+
+On success, the HTTP status code in the response header is `200 OK` and the response body contains a detailed cnam object in JSON format. For the sake of brevity, we will omit the response to the approved CNAM record query.
+```
+--List CNAM Detail
+{'data': {'attributes': {'approval_datetime': None,
+                         'creation_datetime': None,
+                         'is_approved': True,
+                         'rejection_reason': '',
+                         'value': 'TEST, MARIA'},
+          'id': '17604',
+          'links': {'self': 'https://api.flowroute.com/v2/cnams/17604'},
+          'type': 'cnam'}}
+```
+#### create_cnam_record(cnam_value)
+
+The method accepts a Caller ID value as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/create-a-new-cnam-record/). In the following example, we reuse the `random_generator()` function to generate a four-character random string which we will concatenate with FR and assign as our CNAM value.
+    
+##### Example Request
+```
+# Helper function for random strings
+def random_generator(size=4, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for x in range(size))
+
+print("\n--Create a CNAM Record")
+cnam_value = 'FR ' + random_generator()
+result = cnams_controller.create_cnam_record(cnam_value)
+pprint.pprint(result)
+print("\nNOTE: Newly created CNAM records need to be approved first before they can be associated with your long code number.")
+```
+
+##### Example Response
+
+On success, the HTTP status code in the response header is `201 Created` and the response body contains the newly created cnam object in JSON format.
+
+```
+--Create a CNAM Record
+{'data': {'attributes': {'approval_datetime': None,
+                         'creation_datetime': '2018-06-01 '
+                                              '00:09:52.513092+00:00',
+                         'is_approved': False,
+                         'rejection_reason': None,
+                         'value': 'FR H5K8'},
+          'id': '23454',
+          'links': {'self': 'https://api.flowroute.com/v2/cnams/23454'},
+          'type': 'cnam'}}
+
+NOTE: Newly created CNAM records need to be approved first before they can be associated with your long code number.
+```
+#### associate_cnam(cnam_id, number_id)
+
+The method accepts a CNAM record ID and a phone number as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/assign-cnam-record-to-phone-number/). In the following example, we will call `list_account_phone_numbers()` and associate the first number in the returned array with our previously assigned `cnam_id`.
+    
+##### Example Request
+```
+print("\n--Associate a CNAM Record to a DID")
+our_numbers = numbers_controller.list_account_phone_numbers()
+did_id = our_numbers['data'][0]['id']
+
+if cnam_id is None:
+    print("Create some CNAM records and wait for approval before trying"
+          " to associate them with a DID")
+else:
+    result = cnams_controller.associate_cnam(cnam_id, did_id)
+    pprint.pprint(result)
+```
+
+##### Example Response
+On success, the HTTP status code in the response header is `202 Accepted` and the response body contains an attributes dictionary containing the `date_created` field and the assigned cnam object in JSON format. This request will fail if the CNAM you are trying to associate has not yet been approved.
+```
+--Associate a CNAM Record to a DID
+{'data': {'attributes': {'date_created': 'Fri, 01 Jun 2018 00:17:52 GMT'},
+          'id': 17604,
+          'type': 'cnam'}}
+```
+#### unassociate_cnam(number_id)
+
+The method accepts a phone number as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/unassign-a-cnam-record-from-phone-number/). In the following example, we will disassociate the same phone number that we've used in `associate_cnam()`.
+    
+##### Example Request
+```
+print("\n--Unassociate a CNAM Record from a DID")
+result = cnams_controller.unassociate_cnam(did_id)
+pprint.pprint(result)
+```
+
+##### Example Response
+On success, the HTTP status code in the response header is `202 Accepted` and the response body contains an attributes object with the date the CNAM was requested to be deleted, and the updated cnam object in JSON format.
+
+```
+--Unassociate a CNAM Record from a DID
+{'data': {'attributes': {'date_created': 'Fri, 01 Jun 2018 00:17:52 GMT'},
+          'id': None,
+          'type': 'cnam'}}
+```
+#### remove_cnam(cnam_id)
+
+The method accepts a CNAM record ID as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/remove-cnam-record-from-account/). In the following example, we will be deleting our previously extracted `cnam_id` from the "List Approved CNAM Records" function call.
+    
+##### Example Request
+```
+print("\n--Remove a CNAM Record from your account")
+result = cnams_controller.remove_cnam(cnam_id)
+pprint.pprint(result)
+```
+
+##### Example Response
+On success, the HTTP status code in the response header is `204 No Content` which means that the server successfully processed the request and is not returning any content.
+
+```
+--Remove a CNAM Record from your account
+204 No Content
+```
+
+#### Errors
+
+In cases of method errors, the Python library raises an exception which includes an error message and the HTTP body that was received in the request. 
+
+##### Example Error
+` raise ErrorException('403 Forbidden – The server understood the request but refuses to authorize it.', _context) `
+ 
+## Testing
+
+Once you are done configuring your Flowroute API credentials and updating the function parameters, you can run any of the demo files to see them in action. The Flowroute library demo files are named after the resource they represent: <resource_name>_demo.py.
+
+##### Function Declaration
+```
+// List E911 Record Details
+echo "--List detail information for an E911 Record\n";
+$detail_id = $e911_list[0]->id;
+$detail_record = $client->getE911s()->get_e911_details($detail_id);
+var_dump($detail_record);
+```
+##### Example Response
+
+On success, the HTTP status code in the response header is <span class="code-variable">200 OK</span> and the response body contains an array of e911 objects in JSON format. Note that this demo function iterates through all the E911 records on your account filtered by the parameters that you specify. The following example response has been clipped for brevity's sake.
+
+```
 
 ## Errors
 
