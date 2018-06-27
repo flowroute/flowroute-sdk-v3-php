@@ -32,17 +32,17 @@ The Flowroute PHP Library v3 provides methods for interacting with [Numbers v2](
         
         *   [E911 Address Management](#e911-address-management)
             *   [listE911s](#liste911sclient)
-            *   [get_e911_details](#get_e911_details)
-            *   [validate_address](#validate_address)
-            *   [create_address](#create_address)
-            *   [update_address](#update_address)
-            *   [associate_did](#associate_did)
-            *   [list_dids_for_address](#list_dids_for_address)
-            *   [unassociate_did](#unassociate_did)
-            *   [delete_address](#delete_address)
+            *   [get_e911_details](#get_e911_detailsdetail_id)
+            *   [validate_address](#validate_addresse911_object)
+            *   [create_address](#create_addresse911_object)
+            *   [update_address](#update_addressbody-detail_id)
+            *   [associate_did](#associate_diddid_id-detail_id)
+            *   [list_dids_for_address](#list_dids_for_addressdetail_id)
+            *   [unassociate_did](#unassociate_diddid_id)
+            *   [delete_address](#delete_addressdetail_id)
         
         *   [CNAM Record Management](#cnam-record-management)
-            *   [GetCNAMs](#getcnams)
+            *   [GetCNAMs](#getcnamsclient-approval_status)
             *   [createCNAM](#createCNAM)
             *   [getCNAMdetails](#getcnamdetails)
             *   [associateCNAM](#associatecnam)
@@ -1123,7 +1123,7 @@ On success, the HTTP status code in the response header is `201 Created` and the
   }
 }
 ```
-#### update_address($body, $detail_id)
+#### update_address($e911_object, $detail_id)
 
 The method accepts an E911 object and an E911 record ID. Learn more about the different E911 attributes that you can update in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/update-and-validate-existing-e911-address/). In the following example, we will retrieve the record ID of our newly created E911 address and assign it to a variable, `detail_id`. We then update the `label` of our selected E911 address to "Work".
     
@@ -1313,6 +1313,7 @@ function GetCNAMs($client, $is_approved=False, $startsWith=NULL,
 }
 ```
 ##### Example Request
+```
 echo "Listing only Approved CNAM Records";
 // List approved CNAM records
 $our_cnams = GetCNAMs($client, True);
@@ -1329,7 +1330,7 @@ if (count($our_cnams) == 0)
 On success, the HTTP status code in the response header is `200 OK` and the response body contains an array of cnam objects in JSON format.
 
 ```
---List CNAM Records
+Listing only Approved CNAM Records
 {'data': [{'attributes': {'approval_datetime': None,
                           'creation_datetime': None,
                           'is_approved': True,
