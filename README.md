@@ -1085,7 +1085,7 @@ On success, the HTTP status code in the response header is `204 No Content` whic
 ```
 #### create_address($e911_object)
 
-The method accepts an E911 object variable with its different attributes as a parameter. Learn more about the different E911 attributes in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/create-and-validate-new-e911-address/). In the following example request, we pass our `E911Record` object variable, `body`, as a parameter to the `create_address` method.
+The method accepts an E911 object with its different attributes as a parameter. Learn more about the different E911 attributes in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/create-and-validate-new-e911-address/). In the following example request, we pass our `E911Record` object, `body`, as a parameter to the `create_address` method.
     
 ##### Example Request
 ```
@@ -1125,7 +1125,7 @@ On success, the HTTP status code in the response header is `201 Created` and the
 ```
 #### update_address($body, $detail_id)
 
-The method accepts an E911 object variable and an E911 record ID. Learn more about the different E911 attributes that you can update in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/update-and-validate-existing-e911-address/). In the following example, we will retrieve the record ID of our newly created E911 address and assign it to a variable, `detail_id`. We then update the `label` of our selected E911 address to "Work".
+The method accepts an E911 object and an E911 record ID. Learn more about the different E911 attributes that you can update in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/update-and-validate-existing-e911-address/). In the following example, we will retrieve the record ID of our newly created E911 address and assign it to a variable, `detail_id`. We then update the `label` of our selected E911 address to "Work".
     
 ##### Example Request
 ```
@@ -1262,7 +1262,7 @@ Delete an E911 Address
 
 ### CNAM Record Management
 
-The Flowroute PHP Library v3  allows you to make HTTP requests to the `cnams` resource of Flowroute API v2: `https://api.flowroute.com/v2/cnams`.
+The Flowroute PHP Library v3 allows you to make HTTP requests to the `cnams` resource of Flowroute API v2: `https://api.flowroute.com/v2/cnams`.
 
 All of the CNAM record management methods are encapsulated in `cnam_demo.php`.
 
@@ -1270,17 +1270,58 @@ All of the CNAM record management methods are encapsulated in `cnam_demo.php`.
 | ------------------- |
 | The E911 and CNAM API reference pages are currently restricted to our beta customers, which means that all API reference links below currently return a `404 Not Found`. They will be publicly available during our E911 and CNAM APIs GA launch in a few weeks. |
 
-#### list\_cnams()
+#### GetCNAMs($client, approval_status)
 
-The method accepts `limit`, `offset`, and `is_approved` as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-account-cnam-records/).
+The method accepts a client object and all the different CNAM query parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-account-cnam-records/). In the following example request, we will only retrieve approved CNAM records. Note that this demo function iterates through all the E911 records on your account filtered by the parameters t     hat you specify. The following example response has been clipped for brevity's sake.
     
+##### Function Declaration
+```
+function GetCNAMs($client, $is_approved=False, $startsWith=NULL,
+                  $endsWith=NULL, $contains=NULL, $limit=10, $offset=0)
+{
+    $return_list = array();
+    // User the CNAM Controller from our Client
+    $cnams = $client->getCNAMS();
+    do
+    {
+        $cnam_data = $cnams->listCNAMs($limit, $offset, $is_approved,
+                                       $startsWith, $contains, $endsWith);
+        // Iterate through each number item
+        foreach ($cnam_data as $entry)
+        {
+            foreach ($entry as $item) {
+                echo "---------------------------\nCNAM Records:\n";
+                var_dump($item);
+                $return_list[] = $item;
+            }
+        }
+
+        // See if there is more data to process
+        $links = $cnam_data->links;
+        if (isset($links->next))
+        {
+            // more data to pull
+            $offset += $limit;
+        }
+        else
+        {
+            break;   // no more data
+        }
+    } while (true);
+
+    return $return_list;
+}
+```
 ##### Example Request
-```python
-print("--List CNAM Records")
-limit = 10
-offset = None
-result = cnams_controller.list_cnams(limit, offset)
-pprint.pprint(result)
+echo "Listing only Approved CNAM Records";
+// List approved CNAM records
+$our_cnams = GetCNAMs($client, True);
+
+if (count($our_cnams) == 0)
+{
+    echo "No currently approved CNAM records. This is as far as the demo can run until you have some records ready for use.";
+    exit();
+}
 ```
 
 ##### Example Response
@@ -1349,27 +1390,23 @@ On success, the HTTP status code in the response header is `200 OK` and the resp
            'type': 'cnam'}],
  'links': {'self': 'https://api.flowroute.com/v2/cnams?limit=10&offset=0'}}
 ```
-#### get_cnam(cnam_id)
+#### get_cnam($cnam_id)
 
 The method accepts a CNAM record ID as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-cnam-record-details/). In the following example, we query for approved CNAM records on your account and then extract the ID of the first record returned and retrieve the details of that specific CNAM record. 
     
 ##### Example Request
 ```
-print("\n--List Approved CNAM Records")
-result = cnams_controller.list_cnams(is_approved=True)
-pprint.pprint(result)
-if len(result['data']):
-    cnam_id = result['data'][0]['id']
-
-    print("\n--List CNAM Detail")
-    result = cnams_controller.get_cnam(cnam_id)
-    pprint.pprint(result)
+// CNAM Details
+echo "List CNAM Details " . $our_cnams[0]->id . "\n";
+$result = $client->getCNAMS()->getCNAMdetails($our_cnams[0]->id);
+var_dump($result);
 ```
 ##### Example Response
 
-On success, the HTTP status code in the response header is `200 OK` and the response body contains a detailed cnam object in JSON format. For the sake of brevity, we will omit the response to the approved CNAM record query.
+On success, the HTTP status code in the response header is `200 OK` and the response body contains a detailed cnam object in JSON format.
+
 ```
---List CNAM Detail
+List CNAM Details 17604
 {'data': {'attributes': {'approval_datetime': None,
                          'creation_datetime': None,
                          'is_approved': True,
@@ -1379,141 +1416,138 @@ On success, the HTTP status code in the response header is `200 OK` and the resp
           'links': {'self': 'https://api.flowroute.com/v2/cnams/17604'},
           'type': 'cnam'}}
 ```
-#### create_cnam_record(cnam_value)
+#### create_cnam_record($cnam_value)
 
-The method accepts a Caller ID value as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/create-a-new-cnam-record/). In the following example, we reuse the `random_generator()` function to generate a four-character random string which we will concatenate with FR and assign as our CNAM value.
+The method accepts a Caller ID value as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/create-a-new-cnam-record/). In the following example, we include a `generateRandomString` function to generate a four-character random string which we will concatenate with Flowroute and assign as our CNAM value. Note that you can enter up to 15 characters for your CNAM value.
     
 ##### Example Request
 ```
-# Helper function for random strings
-def random_generator(size=4, chars=string.ascii_uppercase + string.digits):
-    return ''.join(random.choice(chars) for x in range(size))
+function generateRandomString($length = 10) {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $charactersLength = strlen($characters);
+    $randomString = '';
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[rand(0, $charactersLength - 1)];
+    }
+    return $randomString;
+}
 
-print("\n--Create a CNAM Record")
-cnam_value = 'FR ' + random_generator()
-result = cnams_controller.create_cnam_record(cnam_value)
-pprint.pprint(result)
-print("\nNOTE: Newly created CNAM records need to be approved first before they can be associated with your long code number.")
+// Create a CNAM Record
+$cnam_value = 'Flowroute' . generateRandomString(4);
+$new_record = $client->getCNAMS()->createCNAM($cnam_value);
+var_dump($new_record);
 ```
 
 ##### Example Response
 
-On success, the HTTP status code in the response header is `201 Created` and the response body contains the newly created cnam object in JSON format.
+On success, the HTTP status code in the response header is `201 Created` and the response body contains the newly created cnam object in JSON format. This demo includes a `wait_for_user()` function which gives you a confirmation of the CNAM record creation then prompts you to press "Enter". Afterwards, you should see a message on the limitation around CNAM record and phone number association.
 
 ```
---Create a CNAM Record
-{'data': {'attributes': {'approval_datetime': None,
-                         'creation_datetime': '2018-06-01 '
-                                              '00:09:52.513092+00:00',
-                         'is_approved': False,
-                         'rejection_reason': None,
-                         'value': 'FR H5K8'},
-          'id': '23454',
-          'links': {'self': 'https://api.flowroute.com/v2/cnams/23454'},
-          'type': 'cnam'}}
+{
+  "data": {
+    "attributes": {
+      "approval_datetime": null,
+      "creation_datetime": "2018-06-27 20:44:01.543801+00:00",
+      "is_approved": false,
+      "rejection_reason": null,
+      "value": "FLOWROUTEVMKM"
+    },
+    "id": "23922",
+    "links": {
+      "self": "https://api.flowroute.com/v2/cnams/23922"
+    },
+    "type": "cnam"
+  }
+}
+New Record Created - Please press Enter to continue.
 
-NOTE: Newly created CNAM records need to be approved first before they can be associated with your long code number.
+CNAM Records cannot be associated with DIDs until they have been approved.  Typically within 24 hours.
 ```
-#### associate_cnam(cnam_id, number_id)
+#### associate_cnam($cnam_id, $did)
 
-The method accepts a CNAM record ID and a phone number as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/assign-cnam-record-to-phone-number/). In the following example, we will call `list_account_phone_numbers()` and associate the first number in the returned array with our previously assigned `cnam_id`.
+The method accepts a CNAM record ID and a phone number as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/assign-cnam-record-to-phone-number/). In the following example, we will call `getNumbers()` and `getCNAMs()` then associate the first number with the first CNAM record in the resulting numbers and CNAMs arrays. This demo includes a `wait_for_user()` function which gives you a confirmation of the CNAM record association with the phone number and prompts you to press "Enter" to continue.
     
 ##### Example Request
 ```
-print("\n--Associate a CNAM Record to a DID")
-our_numbers = numbers_controller.list_account_phone_numbers()
-did_id = our_numbers['data'][0]['id']
+$cnam_value = $our_cnams[0]->attributes->value;
+$cnam_id =  $our_cnams[0]->id;
+echo "CNAM ID " . $cnam_id . "\n";
+echo "DID ID " . $did . "\n";
+$result = $client->getCNAMS()->associateCNAM($cnam_id, $did);
+var_dump($result);
 
-if cnam_id is None:
-    print("Create some CNAM records and wait for approval before trying"
-          " to associate them with a DID")
-else:
-    result = cnams_controller.associate_cnam(cnam_id, did_id)
-    pprint.pprint(result)
+wait_for_user("New Record Associated");
 ```
 
 ##### Example Response
 On success, the HTTP status code in the response header is `202 Accepted` and the response body contains an attributes dictionary containing the `date_created` field and the assigned cnam object in JSON format. This request will fail if the CNAM you are trying to associate has not yet been approved.
 ```
---Associate a CNAM Record to a DID
+CNAM ID 22790
+DID ID 12062011682
 {'data': {'attributes': {'date_created': 'Fri, 01 Jun 2018 00:17:52 GMT'},
-          'id': 17604,
+          'id': 22790,
           'type': 'cnam'}}
+New Record Associated - Please press Enter to continue.
 ```
-#### unassociate_cnam(number_id)
+#### unassociate_cnam($number_id)
 
-The method accepts a phone number as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/unassign-a-cnam-record-from-phone-number/). In the following example, we will disassociate the same phone number that we've used in `associate_cnam()`.
+The method accepts a phone number as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/unassign-a-cnam-record-from-phone-number/). In the following example, we will disassociate the same phone number that we've used in `associate_cnam()`. This demo includes a `wait_for_user()` function which gives you a confirmation of the CNAM record disassociation from the phone number and prompts you to press "Enter" to continue.
     
 ##### Example Request
 ```
-print("\n--Unassociate a CNAM Record from a DID")
-result = cnams_controller.unassociate_cnam(did_id)
-pprint.pprint(result)
+// Un-associate the new CNAM Record from our DID
+$did = $ourDIDs[0]->id;
+$result = $client->getCNAMS()->unassociateCNAM($did);
+var_dump($result);
 ```
-
 ##### Example Response
-On success, the HTTP status code in the response header is `202 Accepted` and the response body contains an attributes object with the date the CNAM was requested to be deleted, and the updated cnam object in JSON format.
+On success, the HTTP status code in the response header is `202 Accepted` and the response body contains an attributes object with the date the CNAM was requested to be deleted, and the updated cnam object in JSON format. 
 
 ```
---Unassociate a CNAM Record from a DID
-{'data': {'attributes': {'date_created': 'Fri, 01 Jun 2018 00:17:52 GMT'},
+{'data': {'attributes': {'date_created': 'Wed, 27 Jun 2018 20:59:36 GMT'},
           'id': None,
           'type': 'cnam'}}
+New Record Unassociated - Please press Enter to continue.
 ```
-#### remove_cnam(cnam_id)
+#### remove_cnam($cnam_id)
 
-The method accepts a CNAM record ID as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/remove-cnam-record-from-account/). In the following example, we will be deleting our previously extracted `cnam_id` from the "List Approved CNAM Records" function call.
+The method accepts a CNAM record ID as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/remove-cnam-record-from-account/). In the following example, we will be deleting our previously extracted `cnam_id` from the "List Approved CNAM Records" function call. This demo includes a `wait_for_user()` function which gives you a confirmation of the CNAM record deletion and prompts you to press "Enter" to continue.
     
 ##### Example Request
 ```
-print("\n--Remove a CNAM Record from your account")
-result = cnams_controller.remove_cnam(cnam_id)
-pprint.pprint(result)
+// Delete the CNAM Record used
+$result = $client->getCNAMS()->deleteCNAM($cnam_id);
+var_dump($result);
 ```
 
 ##### Example Response
 On success, the HTTP status code in the response header is `204 No Content` which means that the server successfully processed the request and is not returning any content.
 
 ```
---Remove a CNAM Record from your account
 204 No Content
+New Record Deleted - Please press Enter to continue.
 ```
 
 #### Errors
 
-In cases of method errors, the Python library raises an exception which includes an error message and the HTTP body that was received in the request. 
+In cases of method errors, the PHP Library v3 raises an exception which includes an error message and the HTTP body that was received in the request. 
 
 ##### Example Error
-` raise ErrorException('403 Forbidden – The server understood the request but refuses to authorize it.', _context) `
+```
+{
+  "errors": [
+    {
+      "detail": "The method is not allowed for the requested URL.",
+      "id": "a72cab15-2511-43d3-92e2-d77bfbdc5776",
+      "status": 405,
+      "title": "Method Not Allowed"
+    }
+  ]
+}
+```
  
 ## Testing
 
-Once you are done configuring your Flowroute API credentials and updating the function parameters, you can run any of the demo files to see them in action. The Flowroute library demo files are named after the resource they represent: <resource_name>_demo.py.
+Once you are done configuring your Flowroute API credentials and updating the function parameters, you can run any of the demo files to see them in action. The Flowroute library demo files are named after the resource they represent: <resource_name>_demo.php.
 
-##### Function Declaration
-```
-// List E911 Record Details
-echo "--List detail information for an E911 Record\n";
-$detail_id = $e911_list[0]->id;
-$detail_record = $client->getE911s()->get_e911_details($detail_id);
-var_dump($detail_record);
-```
-##### Example Response
-
-On success, the HTTP status code in the response header is <span class="code-variable">200 OK</span> and the response body contains an array of e911 objects in JSON format. Note that this demo function iterates through all the E911 records on your account filtered by the parameters that you specify. The following example response has been clipped for brevity's sake.
-
-```
-
-## Errors
-
-In cases of HTTP errors, the PHP library displays a pop-up window with an error message next to the line of code that caused the error. You can add more error logging if necessary.
-
-### Example Error
-
-    PHP Fatal error:  Uncaught FlowrouteNumbersAndMessagingLib\Exceptions\ErrorException: Unauthorized – There was an issue with your API credentials.
-
-## Testing
-
-Once you are done configuring your Flowroute API credentials and updating the function parameters, run the file to see the demo in action:
-
-`php testSDK.php`
+`php e911_demo.php`
