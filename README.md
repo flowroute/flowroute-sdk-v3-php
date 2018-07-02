@@ -139,12 +139,12 @@ The function declares <span class="code-variable">limit</span>, <span class="cod
         $maxSetupCost = 10.00;
 
         // User the Numbers Controller from our Client
-        $numbers = $client-<getNumbers();
+        $numbers = $client->getNumbers();
 
         do
         {
             echo "Offset is " . $offset;
-            $areacode_data = $numbers-<ListAvailableAreaCodes($limit, $offset, $maxSetupCost);
+            $areacode_data = $numbers->ListAvailableAreaCodes($limit, $offset, $maxSetupCost);
             var_dump($areacode_data);
 
             foreach ($areacode_data as $item)
@@ -155,8 +155,8 @@ The function declares <span class="code-variable">limit</span>, <span class="cod
             }
 
             // See if there is more data to process
-            $links = $areacode_data-<links;
-            if (isset($links-<next))
+            $links = $areacode_data->links;
+            if (isset($links->next))
             {
                 // more data to pull
                 $offset += $limit;
