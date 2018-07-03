@@ -1004,7 +1004,7 @@ var_dump($detail_record);
 ```
 ##### Example Response
 
-On success, the HTTP status code in the response header is <span class="code-variable">200 OK</span> and the response body contains a detailed e911 object in JSON format. 
+On success, the HTTP status code in the response header is `200 OK` and the response body contains a detailed e911 object in JSON format. 
 
 ```
 --List detail information for an E911 Record
