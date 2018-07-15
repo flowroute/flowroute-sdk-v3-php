@@ -1034,7 +1034,7 @@ On success, the HTTP status code in the response header is `200 OK` and the resp
 
 #### validate\_address($e911_object)
 
-In the following example request, we instantiate `body` as an `E911Record` object, then initialize its different attributes with example values. The different attributes that an `E911Record` object can have include `label`, `first_name`, `last_name`, `street_name`, `street_numbe     r`, `address_type`, `address_type_number`, `city`, `state`, `country`, and `zipcode`. Learn more about the different body parameters in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-account-e911-addresses/). We then pass `body` as a parameter for the `validate_address` function.
+In the following example request, we instantiate `body` as an `E911Record` object, then initialize its different attributes with example values. The different attributes that an `E911Record` object can have include `label`, `first_name`, `last_name`, `street_name`, `street_numbe     r`, `address_type`, `address_type_number`, `city`, `state`, `country`, and `zipcode`. Learn more about the different body parameters in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/validate-e911-address/). We then pass `body` as a parameter for the `validate_address` function.
 
     
 ##### Example Request
@@ -1502,7 +1502,7 @@ $result = $client->getCNAMS()->unassociateCNAM($did);
 var_dump($result);
 ```
 ##### Example Response
-On success, the HTTP status code in the response header is `202 Accepted` and the response body contains an attributes object with the date the CNAM was requested to be deleted, and the updated cnam object in JSON format. 
+On success, the HTTP status code in the response header is `202 Accepted` and the response body contains an attributes object with the date the CNAM was requested to be disassociated, and the updated cnam object in JSON format. 
 
 ```
 {'data': {'attributes': {'date_created': 'Wed, 27 Jun 2018 20:59:36 GMT'},
