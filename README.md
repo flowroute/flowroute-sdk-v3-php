@@ -1090,7 +1090,7 @@ The method accepts an E911 object with its different attributes as a parameter. 
 ##### Example Request
 ```
 echo "--Create an E911 Address\n";
-$result = $client->getE911s()->create->address($body);
+$result = $client->getE911s()->create_address($body);
 var_dump($result);
 ```
 
