@@ -1,7 +1,7 @@
 Flowroute PHP Library v3
 =====================
 
-The Flowroute PHP Library v3 provides methods for interacting with [Numbers v2](https://developer.flowroute.com/api/numbers/v2.0/) and [Messages v2.1](https://developer.flowroute.com/api/messages/v2.1/) of the [Flowroute](https://www.flowroute.com) API.
+The Flowroute PHP Library v3 provides methods for interacting with [Numbers v2](https://developer.flowroute.com/api/numbers/v2.0/) &ndash; which includes inbound voice routes, E911 addresses, and CNAM storage &ndash; and [Messages v2.1](https://developer.flowroute.com/api/messages/v2.1/) of the [Flowroute](https://www.flowroute.com) API.
 
 **Topics**
 
@@ -1090,7 +1090,7 @@ The method accepts an E911 object with its different attributes as a parameter. 
 ##### Example Request
 ```
 echo "--Create an E911 Address\n";
-$result = $client-&gt;getE911s()-&gt;create&gt;address($body);
+$result = $client->getE911s()->create->address($body);
 var_dump($result);
 ```
 
@@ -1391,7 +1391,7 @@ Listing only Approved CNAM Records
            'type': 'cnam'}],
  'links': {'self': 'https://api.flowroute.com/v2/cnams?limit=10&offset=0'}}
 ```
-#### get_cnam($cnam_id)
+#### getCNAMdetails($cnam_id)
 
 The method accepts a CNAM record ID as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-cnam-record-details/). In the following example, we query for approved CNAM records on your account and then extract the ID of the first record returned and retrieve the details of that specific CNAM record. 
     
@@ -1417,9 +1417,19 @@ List CNAM Details 17604
           'links': {'self': 'https://api.flowroute.com/v2/cnams/17604'},
           'type': 'cnam'}}
 ```
-#### create_cnam_record($cnam_value)
+#### createCNAM($cnam_value)
 
 The method accepts a Caller ID value as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/create-a-new-cnam-record/). In the following example, we include a `generateRandomString` function to generate a four-character random string which we will concatenate with Flowroute and assign as our CNAM value. Note that you can enter up to 15 characters for your CNAM value.
+
+| CNAM Storage Rules |
+| ------------------- |
+| You can enter up to 15 characters for your CNAM value at least one of which is a letter. |
+| While most CNAM presets can be approved, the following are not allowed and must be rejected: |
+|    -  Consist of curse words and/or is inappropriate. |
+|    -  A phone number (CNAM must be a name not a number) |
+|    -  If the CNAM preset which the customer has submitted appears to be misleading such as: |
+|       - Political Figures or Places (Obama, Barack or The White House) |
+|       - False or fake CNAM (Seattle Police) |
     
 ##### Example Request
 ```
@@ -1464,7 +1474,7 @@ New Record Created - Please press Enter to continue.
 
 CNAM Records cannot be associated with DIDs until they have been approved.  Typically within 24 hours.
 ```
-#### associate_cnam($cnam_id, $did)
+#### associateCNAM($cnam_id, $did)
 
 The method accepts a CNAM record ID and a phone number as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/assign-cnam-record-to-phone-number/). In the following example, we will call `getNumbers()` and `getCNAMs()` then associate the first number with the first CNAM record in the resulting numbers and CNAMs arrays. This demo includes a `wait_for_user()` function which gives you a confirmation of the CNAM record association with the phone number and prompts you to press "Enter" to continue.
     
@@ -1490,7 +1500,7 @@ DID ID 12062011682
           'type': 'cnam'}}
 New Record Associated - Please press Enter to continue.
 ```
-#### unassociate_cnam($number_id)
+#### unassociateCNAM($did)
 
 The method accepts a phone number as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/unassign-a-cnam-record-from-phone-number/). In the following example, we will disassociate the same phone number that we've used in `associate_cnam()`. This demo includes a `wait_for_user()` function which gives you a confirmation of the CNAM record disassociation from the phone number and prompts you to press "Enter" to continue.
     
@@ -1510,7 +1520,7 @@ On success, the HTTP status code in the response header is `202 Accepted` and th
           'type': 'cnam'}}
 New Record Unassociated - Please press Enter to continue.
 ```
-#### remove_cnam($cnam_id)
+#### deleteCNAM($cnam_id)
 
 The method accepts a CNAM record ID as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/remove-cnam-record-from-account/). In the following example, we will be deleting our previously extracted `cnam_id` from the "List Approved CNAM Records" function call. This demo includes a `wait_for_user()` function which gives you a confirmation of the CNAM record deletion and prompts you to press "Enter" to continue.
     
