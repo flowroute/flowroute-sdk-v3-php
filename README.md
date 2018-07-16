@@ -43,11 +43,11 @@ The Flowroute PHP Library v3 provides methods for interacting with [Numbers v2](
         
         *   [CNAM Record Management](#cnam-record-management)
             *   [GetCNAMs](#getcnamsclient-approval_status)
-            *   [getCNAMdetails](#get_cnamcnam_id)
-            *   [createCNAM](#create_cnam_recordcnam_value)
-            *   [associateCNAM](#associate_cnamcnam_id-did)
-            *   [unassociateCNAM](#unassociate_cnamnumber_id)
-            *   [deleteCNAM](#remove_cnamcnam_id)
+            *   [getCNAMdetails](#getcnamdetailscnam_id)
+            *   [createCNAM](#createcnamcnam_value)
+            *   [associateCNAM](#associatecnamcnam_id-did)
+            *   [unassociateCNAM](#unassociatecnamdid)
+            *   [deleteCNAM](#deletecnamcnam_id)
 
     *   [Errors](#errors)
     *   [Testing](#testing)
