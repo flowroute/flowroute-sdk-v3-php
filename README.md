@@ -902,10 +902,6 @@ The Flowroute PHP Library v3 allows you to make HTTP requests to the <span class
 
 All of the E911 address management methods are encapsulated in `e911_demo.php`.
 
-| API Reference Pages |
-| ------------------- |
-| The E911 and CNAM API reference pages are currently restricted to our beta customers, which means that all API reference links below currently return a `404 Not Found`. They will be publicly available during our E911 and CNAM APIs GA launch in a few weeks. |
-
 
 #### listE911s($client)
 
@@ -1266,9 +1262,6 @@ The Flowroute PHP Library v3 allows you to make HTTP requests to the `cnams` res
 
 All of the CNAM record management methods are encapsulated in `cnam_demo.php`.
 
-| API Reference Pages |
-| ------------------- |
-| The E911 and CNAM API reference pages are currently restricted to our beta customers, which means that all API reference links below currently return a `404 Not Found`. They will be publicly available during our E911 and CNAM APIs GA launch in a few weeks. |
 
 #### GetCNAMs($client, approval_status)
 
