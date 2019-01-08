@@ -10,9 +10,9 @@ namespace FlowrouteNumbersAndMessagingLib\Models;
 use JsonSerializable;
 
 /**
- * @This class encapsulates the properties of an SMS (text) Message
+ * @This class encapsulates the properties of an MMS (Multi-Media) Message
  */
-class Message implements JsonSerializable
+class MMS_Message implements JsonSerializable
 {
     /**
      * @The telephone number of the message target
@@ -35,32 +35,31 @@ class Message implements JsonSerializable
     public $body;
 
     /**
-     * @optional callback URL
-     * @var string|NULL $body public property
+     * @a list of the URLs that contain the media for the message.  These
+     *   must be publicly available URLS such as
+     *   https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
+     * @maps media_urls
+     * @var array|NULL $mediaUrls public property
      */
-    public $callback_url;
+    public $mediaUrls;
 
     /**
      * Constructor to set initial or default values of member properties
      * @param string $from      Initialization value for $this->from
      * @param string $to        Initialization value for $this->to
      * @param string $body      Initialization value for $this->body
+     * @param array  $mediaUrls Initialization value for $this->mediaUrls
      */
     public function __construct()
     {
-        if (3 == func_num_args()) {
-            $this->from      = func_get_arg(0);
-            $this->to        = func_get_arg(1);
-            $this->body      = func_get_arg(2);
-        }
-
         if (4 == func_num_args()) {
             $this->from      = func_get_arg(0);
             $this->to        = func_get_arg(1);
             $this->body      = func_get_arg(2);
-            $this->callback_url = func_get_arg(3);
+            $this->mediaUrls = func_get_arg(3);
         }
     }
+
 
     /**
      * Encode this object to JSON
@@ -71,12 +70,10 @@ class Message implements JsonSerializable
         $json['from']       = $this->from;
         $json['to']         = $this->to;
         $json['body']       = $this->body;
-        if($this->callback_url != NULL)
-        {
-            $json['dlr_callback'] = $this->callback_url;
-        }
+        $json['media_urls'] = $this->mediaUrls;
 
         return $json;
     }
 }
 
+?>
